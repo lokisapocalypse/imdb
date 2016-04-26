@@ -1,3 +1,3 @@
-# IMDB wrapper
+# OMDB wrapper
 
-This project serves as a wrapper between your application and the IMDB api.
+This project serves as a wrapper between your application and the omdb api.
