@@ -1,6 +1,6 @@
 {
-    "name": "lokisapocalypse/imdb",
-    "description": "Wrapper for the IMDB api",
+    "name": "lokisapocalypse/omdb",
+    "description": "Wrapper for the OMDB api",
     "require": {
         "php": ">=5.4.0"
     },
@@ -10,7 +10,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Fusani\\Imdb\\": ["src/", "tests/"]
+            "Fusani\\Omdb\\": ["src/", "tests/"]
         }
     }
 }
