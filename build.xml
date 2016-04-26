@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="imdb" default="build">
+<project name="omdb" default="build">
 
     <property environment="env" />
 

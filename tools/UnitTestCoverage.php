@@ -11,7 +11,7 @@ if (($lines['percent'] != '100.00%')
     || ($classes['percent'] != '100.00%')
 ) {
     echo "Tests DO NOT provide 100% code coverage.\n";
-//    exit(1);
+    exit(1);
 }
 
 echo "Tests provide 100% code coverage.\n";
