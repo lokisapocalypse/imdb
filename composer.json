@@ -1,0 +1,16 @@
+{
+    "name": "lokisapocalypse/imdb",
+    "description": "Wrapper for the IMDB api",
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.0",
+        "squizlabs/php_codesniffer": "2.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fusani\\Imdb\\": ["src/", "tests/"]
+        }
+    }
+}
