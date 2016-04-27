@@ -23,7 +23,7 @@ class MovieRepository implements Movie\MovieRepository
     {
         $movie = new Movie\Movie($id);
 
-        $result = $this->adapter->get('', ['t' => $id, 'r' => 'json']);
+        $result = $this->adapter->get('', ['i' => $id, 'r' => 'json']);
 
         if ($result['Response'] == 'False') {
             throw new NotFoundException('No movie was found.');
