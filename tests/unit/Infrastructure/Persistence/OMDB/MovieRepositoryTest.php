@@ -23,10 +23,51 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository = new MovieRepository($this->adapter);
     }
 
-    public function testManyWithTitleLike()
+    public function testManyWithTitleLikeNoMatches()
     {
-        $this->setExpectedException(NotYetImplementedException::class);
-        $this->repository->manyWithTitleLike('Guardians');
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue(['Response' => 'False']));
+
+        $response = $this->repository->manyWithTitleLike('Guardians');
+
+        $this->assertEquals([], $response);
+    }
+
+    public function testManyWithTitleLikeWithMatches()
+    {
+        $response = [
+            'Response' => 'True',
+            'Search' => [
+                [
+                    'Title' => 'Ghostbusters',
+                    'Poster' => 'www.ghostbustersposter.com',
+                    'Type' => 'movie',
+                    'Year' => 1984,
+                    'imdbID' => 15,
+                ],
+                [
+                    'Title' => 'Ghost',
+                    'Poster' => 'www.ghostposter.com',
+                    'Type' => 'movie',
+                    'Year' => 1990,
+                    'imdbID' => 150,
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($response));
+
+        $movies = $this->repository->manyWithTitleLike('ghost');
+
+        $this->assertTrue(is_array($movies));
+        $this->assertEquals(2, count($movies));
+
+        foreach ($movies as $movie) {
+            $this->assertInstanceOf(Movie\Movie::class, $movie);
+        }
     }
 
     public function testOneOfIdWithNoMatch()
@@ -39,7 +80,7 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->oneOfId(1234);
     }
 
-    public function testOneOfIdWithNoPoster()
+    public function testOneOfIdWithMatch()
     {
         $response = [
             'Response' => 'True',
@@ -47,17 +88,8 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
             'Plot' => 'Superheros save the world',
             'Poster' => 'N/A',
             'Type' => 'movie',
-            'Year' => 2012,
+            'Year' => 2014,
             'imdbID' => 15,
-        ];
-
-        $expected = [
-            'id' => 15,
-            'plot' => 'Superheros save the world',
-            'poster' => null,
-            'title' => 'Guardians of the Galaxy',
-            'type' => 'movie',
-            'year' => 2012,
         ];
 
         $this->adapter->expects($this->once())
@@ -68,39 +100,6 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie\Movie::Class, $movie);
-        $this->assertEquals($expected, $movie->provideMovieInterest());
-    }
-
-    public function testOneOfIdWithPoster()
-    {
-        $response = [
-            'Response' => 'True',
-            'Title' => 'Guardians of the Galaxy',
-            'Plot' => 'Superheros save the world',
-            'Poster' => 'my poster',
-            'Type' => 'movie',
-            'Year' => 2012,
-            'imdbID' => 15,
-        ];
-
-        $expected = [
-            'id' => 15,
-            'plot' => 'Superheros save the world',
-            'poster' => 'my poster',
-            'title' => 'Guardians of the Galaxy',
-            'type' => 'movie',
-            'year' => 2012,
-        ];
-
-        $this->adapter->expects($this->once())
-            ->method('get')
-            ->will($this->returnValue($response));
-
-        $movie = $this->repository->oneOfId(15);
-
-        $this->assertNotNull($movie);
-        $this->assertInstanceOf(Movie\Movie::Class, $movie);
-        $this->assertEquals($expected, $movie->provideMovieInterest());
     }
 
     public function testOneOfTitleWithNoMatch()
@@ -113,7 +112,7 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->oneOfTitle(1234);
     }
 
-    public function testOneOfTitleWithNoPoster()
+    public function testOneOfTitleWithMatch()
     {
         $response = [
             'Response' => 'True',
@@ -121,17 +120,8 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
             'Plot' => 'Superheros save the world',
             'Poster' => 'N/A',
             'Type' => 'movie',
-            'Year' => 2012,
+            'Year' => 2014,
             'imdbID' => 15,
-        ];
-
-        $expected = [
-            'id' => 15,
-            'plot' => 'Superheros save the world',
-            'poster' => null,
-            'title' => 'Guardians of the Galaxy',
-            'type' => 'movie',
-            'year' => 2012,
         ];
 
         $this->adapter->expects($this->once())
@@ -142,39 +132,6 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie\Movie::Class, $movie);
-        $this->assertEquals($expected, $movie->provideMovieInterest());
-    }
-
-    public function testOneOfTitleWithPoster()
-    {
-        $response = [
-            'Response' => 'True',
-            'Title' => 'Guardians of the Galaxy',
-            'Plot' => 'Superheros save the world',
-            'Poster' => 'my poster',
-            'Type' => 'movie',
-            'Year' => 2012,
-            'imdbID' => 15,
-        ];
-
-        $expected = [
-            'id' => 15,
-            'plot' => 'Superheros save the world',
-            'poster' => 'my poster',
-            'title' => 'Guardians of the Galaxy',
-            'type' => 'movie',
-            'year' => 2012,
-        ];
-
-        $this->adapter->expects($this->once())
-            ->method('get')
-            ->will($this->returnValue($response));
-
-        $movie = $this->repository->oneOfTitle(15);
-
-        $this->assertNotNull($movie);
-        $this->assertInstanceOf(Movie\Movie::Class, $movie);
-        $this->assertEquals($expected, $movie->provideMovieInterest());
     }
 
     public function testOneOfTitleWithYear()
@@ -189,15 +146,6 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
             'imdbID' => 15,
         ];
 
-        $expected = [
-            'id' => 15,
-            'plot' => 'Superheros save the world',
-            'poster' => 'my poster',
-            'title' => 'Guardians of the Galaxy',
-            'type' => 'movie',
-            'year' => 2012,
-        ];
-
         $this->adapter->expects($this->once())
             ->method('get')
             ->will($this->returnValue($response));
@@ -206,6 +154,5 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie\Movie::Class, $movie);
-        $this->assertEquals($expected, $movie->provideMovieInterest());
     }
 }

@@ -11,18 +11,22 @@ class Movie
     protected $type;
     protected $year;
 
-    public function __construct($id)
+    public function __construct($id, $title, $type, $year)
     {
         $this->id = $id;
-    }
-
-    public function populate($plot, $poster, $title, $type, $year)
-    {
-        $this->plot = $plot;
-        $this->poster = $poster;
         $this->title = $title;
         $this->type = $type;
         $this->year = $year;
+    }
+
+    public function setPlot($plot)
+    {
+        $this->plot = $plot;
+    }
+
+    public function setPoster($poster)
+    {
+        $this->poster = $poster;
     }
 
     public function provideMovieInterest()

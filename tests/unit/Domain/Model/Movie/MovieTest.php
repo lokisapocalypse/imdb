@@ -6,41 +6,38 @@ use PHPUnit_Framework_TestCase;
 
 class MovieTest extends PHPUnit_Framework_TestCase
 {
-    public function testProvideInterestSimpleObject()
+    protected $expected;
+    protected $movie;
+
+    public function setup()
     {
-        $movie = new Movie(15);
-        $interest = $movie->provideMovieInterest();
-
-        $this->assertEquals(15, $interest['id']);
-
-        unset($interest['id']);
-
-        // everything else should be null
-        foreach ($interest as $field => $value) {
-            $this->assertNull($value);
-        }
+        $this->expected = [
+            'id' => 15,
+            'title' => 'Guardians of the Galaxy',
+            'year' => 2014,
+            'type' => 'movie',
+            'poster' => null,
+            'plot' => null,
+        ];
+        $this->movie = new Movie(15, 'Guardians of the Galaxy', 'movie', 2014);
     }
 
-    public function testPopulate()
+    public function testProvideInterestSimpleObject()
     {
-        $movie = new Movie(15);
-        $movie->populate(
-            'Superheros save the world',
-            'Pose 1',
-            'Guardians of the Galaxy',
-            'Movie',
-            2012
-        );
+        $this->assertEquals($this->expected, $this->movie->provideMovieInterest());
+    }
 
-        $expected = [
-            'id' => 15,
-            'plot' => 'Superheros save the world',
-            'poster' => 'Pose 1',
-            'title' => 'Guardians of the Galaxy',
-            'type' => 'Movie',
-            'year' => 2012,
-        ];
+    public function testSetPoster()
+    {
+        $this->movie->setPoster('www.movieposters.com/guardians-of-the-galaxy');
+        $expected = array_merge($this->expected, ['poster' => 'www.movieposters.com/guardians-of-the-galaxy']);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
 
-        $this->assertEquals($expected, $movie->provideMovieInterest());
+    public function testSetPlot()
+    {
+        $this->movie->setPlot('Superheros save the world');
+        $expected = array_merge($this->expected, ['plot' => 'Superheros save the world']);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 }
