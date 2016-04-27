@@ -1,12 +1,12 @@
 <?php
 
-namespace Fusani\Omdb\Infrastructure\Persistence\OMDB;
+namespace Fusani\Movies\Infrastructure\Persistence\OMDB;
 
-use Fusani\Omdb\Infrastructure\Adapter;
+use Fusani\Movies\Infrastructure\Adapter;
 use PHPUnit_Framework_TestCase;
 
 /**
- * @covers Fusani\Omdb\Infrastructure\Persistence\OMDB\MovieRepository
+ * @covers Fusani\Movies\Infrastructure\Persistence\OMDB\MovieRepository
  */
 class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 {

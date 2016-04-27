@@ -1,5 +1,5 @@
 <?php
-namespace Fusani\Omdb\Infrastructure\Adapter;
+namespace Fusani\Movies\Infrastructure\Adapter;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception;

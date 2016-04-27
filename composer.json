@@ -1,6 +1,6 @@
 {
-    "name": "lokisapocalypse/omdb",
-    "description": "Wrapper for the OMDB api",
+    "name": "lokisapocalypse/movies",
+    "description": "Search for movies / TV shows",
     "require": {
         "guzzlehttp/guzzle": "~4.0",
         "php": ">=5.4.0"
@@ -11,7 +11,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Fusani\\Omdb\\": ["src/", "tests/"]
+            "Fusani\\Movies\\": ["src/", "tests/"]
         }
     }
 }

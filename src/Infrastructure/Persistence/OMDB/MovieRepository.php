@@ -1,9 +1,9 @@
 <?php
 
-namespace Fusani\Omdb\Infrastructure\Persistence\OMDB;
+namespace Fusani\Movies\Infrastructure\Persistence\OMDB;
 
-use Fusani\Omdb\Domain\Model\Movie;
-use Fusani\Omdb\Infrastructure\Adapter;
+use Fusani\Movies\Domain\Model\Movie;
+use Fusani\Movies\Infrastructure\Adapter;
 
 class MovieRepository implements Movie\MovieRepository
 {

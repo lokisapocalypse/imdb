@@ -1,11 +1,11 @@
 <?php
 
-namespace Fusani\Omdb\Infrastructure\Persistence\OMDB;
+namespace Fusani\Movies\Infrastructure\Persistence\OMDB;
 
 use PHPUnit_Framework_TestCase;
 
 /**
- * @covers Fusani\Omdb\Infrastructure\Persistence\OMDB\MovieRepositoryFactory
+ * @covers Fusani\Movies\Infrastructure\Persistence\OMDB\MovieRepositoryFactory
  */
 class MovieFactoryRepositoryTest extends PHPUnit_Framework_TestCase
 {
@@ -15,6 +15,6 @@ class MovieFactoryRepositoryTest extends PHPUnit_Framework_TestCase
         $repository = $factory->createRepository();
 
         $this->assertNotNull($repository);
-        $this->assertInstanceOf('Fusani\Omdb\Infrastructure\Persistence\OMDB\MovieRepository', $repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
     }
 }

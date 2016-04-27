@@ -1,12 +1,12 @@
 <?php
 
-namespace Fusani\Omdb\Infrastructure\Adapter;
+namespace Fusani\Movies\Infrastructure\Adapter;
 
 use GuzzleHttp\Exception;
 use PHPUnit_Framework_TestCase;
 
 /**
- * @covers Fusani\Omdb\Infrastructure\Adapter\GuzzleAdapter
+ * @covers Fusani\Movies\Infrastructure\Adapter\GuzzleAdapter
  */
 class GuzzleAdapterTest extends PHPUnit_Framework_TestCase
 {
