@@ -1,5 +1,5 @@
 {
-    "name": "lokisapocalypse/movies",
+    "name": "fusani/movies",
     "description": "Search for movies / TV shows",
     "require": {
         "guzzlehttp/guzzle": "~4.0",
