@@ -25,6 +25,7 @@ class MovieTest extends PHPUnit_Framework_TestCase
     {
         $movie = new Movie(15);
         $movie->populate(
+            'Superheros save the world',
             'Pose 1',
             'Guardians of the Galaxy',
             'Movie',
@@ -33,6 +34,7 @@ class MovieTest extends PHPUnit_Framework_TestCase
 
         $expected = [
             'id' => 15,
+            'plot' => 'Superheros save the world',
             'poster' => 'Pose 1',
             'title' => 'Guardians of the Galaxy',
             'type' => 'Movie',

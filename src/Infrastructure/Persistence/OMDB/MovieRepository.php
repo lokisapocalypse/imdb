@@ -21,6 +21,22 @@ class MovieRepository implements Movie\MovieRepository
 
     public function oneOfId($id)
     {
-        throw new NotYetImplementedException('Not yet implemented.');
+        $movie = new Movie\Movie($id);
+
+        $result = $this->adapter->get('', ['i' => $id, 'r' => 'json']);
+
+        if ($result['Response'] == 'False') {
+            throw new NotFoundException('No movie was found.');
+        }
+
+        $movie->populate(
+            $result['Plot'],
+            $result['Poster'] == 'N/A' ? null : $result['Poster'],
+            $result['Title'],
+            $result['Type'],
+            $result['Year']
+        );
+
+        return $movie;
     }
 }
