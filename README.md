@@ -2,6 +2,8 @@
 
 This project provides various repositories and methods for searching for movies or TV shows. For your convenience, I've provided a factory to create a repository. If you'd prefer a more hands on approach, you are free to build your own adapter class. You simply need to ensure your adapter implements the Fusani\Movies\Infrastructure\Provider\Adapter interface.
 
+This is very much an alpha version and is probably not production ready yet.
+
 ## Creating a repository
 
 There are two ways to create a repository. The simplest way is to use the provided factory.
