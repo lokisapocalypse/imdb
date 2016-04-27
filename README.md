@@ -31,4 +31,4 @@ Here, id represents an internal imdb id.
 
 ### oneOfTitle ###
 
-This will return exactly one movie. In the event that more than one movie shares a title (Romeo and Juliet) for example, this will still only return one title.
+This will return exactly one movie. In the event that more than one movie shares a title (Romeo and Juliet) for example, this will still only return one title. There is an optional year parameter that will allow you to be more specific about which movie you are looking for.
