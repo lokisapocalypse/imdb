@@ -5,6 +5,7 @@ namespace Fusani\Movies\Domain\Model\Movie;
 class Movie
 {
     protected $id;
+    protected $plot;
     protected $poster;
     protected $title;
     protected $type;
@@ -15,8 +16,9 @@ class Movie
         $this->id = $id;
     }
 
-    public function populate($poster, $title, $type, $year)
+    public function populate($plot, $poster, $title, $type, $year)
     {
+        $this->plot = $plot;
         $this->poster = $poster;
         $this->title = $title;
         $this->type = $type;
@@ -27,6 +29,7 @@ class Movie
     {
         return [
             'id' => $this->id,
+            'plot' => $this->plot,
             'poster' => $this->poster,
             'title' => $this->title,
             'type' => $this->type,
