@@ -2,10 +2,11 @@
     "name": "lokisapocalypse/omdb",
     "description": "Wrapper for the OMDB api",
     "require": {
+        "guzzlehttp/guzzle": "~4.0",
         "php": ">=5.4.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0",
+        "phpunit/phpunit": "~5.0",
         "squizlabs/php_codesniffer": "2.*"
     },
     "autoload": {
