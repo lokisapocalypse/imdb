@@ -82,22 +82,6 @@ class GuzzleAdapterTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($adapter->post('/test', []));
     }
-
-    public function testPutFailure()
-    {
-        $adapter = new MockGuzzleAdapter('https://www.example.com');
-        $adapter->setClient($this->mockClient(false, 'put'));
-
-        $this->assertFalse($adapter->put('/test', []));
-    }
-
-    public function testPutSuccess()
-    {
-        $adapter = new MockGuzzleAdapter('http://www.google.com');
-        $adapter->setClient($this->mockClient(true, 'put'));
-
-        $this->assertTrue($adapter->put('/test', []));
-    }
 }
 
 class MockGuzzleAdapter extends GuzzleAdapter

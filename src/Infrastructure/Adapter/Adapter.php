@@ -29,12 +29,4 @@ interface Adapter
      * @param $params : the parameters that will be sent
      */
     public function post($path, $params);
-
-    /**
-     * Method for making a put request.
-     *
-     * @param $path : the path where the request will be made
-     * @param $params : the parameters that will be sent
-     */
-    public function put($path, $params);
 }

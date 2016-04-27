@@ -82,28 +82,4 @@ class GuzzleAdapter implements Adapter
 
         return $results;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function put($path, $params)
-    {
-        try {
-            $response = $this->client->put(
-                $path,
-                array(
-                    'headers' => array('Content-Type' => 'application/json'),
-                    'body' => json_encode($params)
-                )
-            );
-            $results = $response->json();
-        } catch (Exception\BadResponseException $e) {
-            // Guzzle throws exceptions on non-200 series HTTP codes.
-            // BadResponseException means authentication failed,
-            // other exceptions probably means that the request is bad
-            return false;
-        }
-
-        return $results;
-    }
 }
