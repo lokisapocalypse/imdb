@@ -8,15 +8,27 @@ use Fusani\Movies\Infrastructure\Adapter;
 class MovieRepository implements Movie\MovieRepository
 {
     protected $adapter;
+    protected $movieBuilder;
 
     public function __construct(Adapter\Adapter $adapter)
     {
         $this->adapter = $adapter;
+        $this->movieBuilder = new Movie\MovieBuilder();
     }
 
     public function manyWithTitleLike($title)
     {
-        throw new NotYetImplementedException('Not yet implemented.');
+        $movies = [];
+
+        $result = $this->adapter->get('', ['s' => $title, 'r' => 'json']);
+
+        if ($result['Response'] != 'False') {
+            foreach ($result['Search'] as $item) {
+                $movies[] = $this->movieBuilder->buildFromOmdb($item);
+            }
+        }
+
+        return $movies;
     }
 
     public function oneOfId($id)
@@ -45,15 +57,6 @@ class MovieRepository implements Movie\MovieRepository
             throw new NotFoundException('No movie was found.');
         }
 
-        $movie = new Movie\Movie($result['imdbID']);
-        $movie->populate(
-            $result['Plot'],
-            $result['Poster'] == 'N/A' ? null : $result['Poster'],
-            $result['Title'],
-            $result['Type'],
-            $result['Year']
-        );
-
-        return $movie;
+        return $this->movieBuilder->buildFromOmdb($result);
     }
 }
