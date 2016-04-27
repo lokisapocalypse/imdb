@@ -1,6 +1,6 @@
 <?php
 
-namespace Fusani\Omdb\Domain\Model\Movie;
+namespace Fusani\Movies\Domain\Model\Movie;
 
 use PHPUnit_Framework_TestCase;
 

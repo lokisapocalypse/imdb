@@ -1,8 +1,8 @@
 <?php
 
-namespace Fusani\Omdb\Infrastructure\Persistence\OMDB;
+namespace Fusani\Movies\Infrastructure\Persistence\OMDB;
 
-use Fusani\Omdb\Infrastructure\Adapter;
+use Fusani\Movies\Infrastructure\Adapter;
 
 class MovieRepositoryFactory
 {

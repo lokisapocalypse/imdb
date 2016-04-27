@@ -1,6 +1,6 @@
 <?php
 
-namespace Fusani\Omdb\Infrastructure\Persistence\OMDB;
+namespace Fusani\Movies\Infrastructure\Persistence\OMDB;
 
 use RuntimeException;
 

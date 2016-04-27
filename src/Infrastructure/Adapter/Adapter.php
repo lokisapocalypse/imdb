@@ -1,5 +1,5 @@
 <?php
-namespace Fusani\Omdb\Infrastructure\Adapter;
+namespace Fusani\Movies\Infrastructure\Adapter;
 
 /**
  * This allows us to build several different types of adapters with
