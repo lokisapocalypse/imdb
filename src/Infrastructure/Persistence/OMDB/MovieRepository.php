@@ -20,7 +20,7 @@ class MovieRepository implements Movie\MovieRepository
     {
         $movies = [];
 
-        $result = $this->adapter->get('', ['s' => $title, 'r' => 'json']);
+        $result = $this->adapter->get('', ['s' => $title.'*', 'r' => 'json']);
 
         if ($result['Response'] != 'False') {
             foreach ($result['Search'] as $item) {
