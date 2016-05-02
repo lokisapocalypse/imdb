@@ -54,7 +54,7 @@ class MovieRepository implements Movie\MovieRepository
         $result = $this->adapter->get('', $params);
 
         if ($result['Response'] == 'False') {
-            throw new NotFoundException('No movie was found.');
+            throw new Movie\NotFoundException('No movie was found.');
         }
 
         return $this->movieBuilder->buildFromOmdb($result);

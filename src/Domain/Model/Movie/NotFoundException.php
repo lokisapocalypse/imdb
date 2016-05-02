@@ -1,6 +1,6 @@
 <?php
 
-namespace Fusani\Movies\Infrastructure\Persistence\Netflix;
+namespace Fusani\Movies\Domain\Model\Movie;
 
 use Exception;
 
