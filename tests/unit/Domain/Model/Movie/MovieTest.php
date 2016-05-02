@@ -66,6 +66,11 @@ class MovieTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 
+    public function testTitle()
+    {
+        $this->assertEquals('Guardians of the Galaxy', $this->movie->title());
+    }
+
     public function testUpdatedWith()
     {
         $movie = new Movie(16, 'Guardians of the Galaxy', 'movie', 2014);

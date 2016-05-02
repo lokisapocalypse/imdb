@@ -27,16 +27,6 @@ class Movie
             && $this->year == $movie->year;
     }
 
-    public function setPlot($plot)
-    {
-        $this->plot = $plot;
-    }
-
-    public function setPoster($poster)
-    {
-        $this->poster = $poster;
-    }
-
     public function provideMovieInterest()
     {
         return [
@@ -48,6 +38,21 @@ class Movie
             'type' => $this->type,
             'year' => $this->year,
         ];
+    }
+
+    public function setPlot($plot)
+    {
+        $this->plot = $plot;
+    }
+
+    public function setPoster($poster)
+    {
+        $this->poster = $poster;
+    }
+
+    public function title()
+    {
+        return $this->title;
     }
 
     public function updateWith($source, Movie $movie)
