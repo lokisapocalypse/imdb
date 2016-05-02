@@ -5,6 +5,12 @@ namespace Fusani\Movies\Infrastructure\Persistence\Netflix;
 use Fusani\Movies\Domain\Model\Movie;
 use Fusani\Movies\Infrastructure\Adapter;
 
+/**
+ * This is not the official Netflix API but uses the Netflix Roulette open API. If using this repository, please
+ * credit the Netflix Roulette API.
+ *
+ * This API only supports online streaming movies.
+ */
 class MovieRepository implements Movie\MovieRepository
 {
     protected $adapter;
