@@ -31,6 +31,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'id' => 15,
             'plot' => 'Superheros save the world',
             'poster' => null,
+            'sources' => [],
             'title' => 'Guardians of the Galaxy',
             'type' => 'movie',
             'year' => 2014,
@@ -58,6 +59,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'plot' => null,
             'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
             'title' => 'Guardians of the Galaxy',
+            'sources' => [],
             'type' => 'movie',
             'year' => 2014,
         ];
@@ -85,6 +87,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'plot' => 'Superheros save the galaxy',
             'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
             'title' => 'Guardians of the Galaxy',
+            'sources' => [],
             'type' => 'movie',
             'year' => 2014,
         ];

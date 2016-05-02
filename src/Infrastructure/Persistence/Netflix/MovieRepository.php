@@ -45,7 +45,7 @@ class MovieRepository implements Movie\MovieRepository
         $result = $this->adapter->get('', $params);
 
         if (!empty($result['errorcode']) && $result['errorcode'] == 404) {
-            throw new NotFoundException('No movie was found.');
+            throw new Movie\NotFoundException('No movie was found.');
         }
 
         return $this->movieBuilder->buildFromNetflix($result);

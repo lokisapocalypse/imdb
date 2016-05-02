@@ -37,7 +37,7 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testOneOfTitleWithNoMatch()
     {
-        $this->setExpectedException(NotFoundException::class);
+        $this->setExpectedException(Movie\NotFoundException::class);
 
         $this->adapter->expects($this->once())
             ->method('get')
