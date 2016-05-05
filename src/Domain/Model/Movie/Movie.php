@@ -21,6 +21,17 @@ class Movie
         $this->year = $year;
     }
 
+    public function addSource($type, $name, $link, array $details = [])
+    {
+        $source = new Source($type, $name, $link, $details);
+        $this->sources[$type][] = $source;
+    }
+
+    public function identity()
+    {
+        return $this->id;
+    }
+
     public function isTheSameAs(Movie $movie)
     {
         return $this->title == $movie->title
@@ -29,11 +40,19 @@ class Movie
 
     public function provideMovieInterest()
     {
+        $sources = [];
+
+        foreach ($this->sources as $type => $sourceList) {
+            foreach ($sourceList as $source) {
+                $sources[$type][] = $source->provideSourceInterest();
+            }
+        }
+
         return [
             'id' => $this->id,
             'plot' => $this->plot,
             'poster' => $this->poster,
-            'sources' => $this->sources,
+            'sources' => $sources,
             'title' => $this->title,
             'type' => $this->type,
             'year' => $this->year,
@@ -53,10 +72,5 @@ class Movie
     public function title()
     {
         return $this->title;
-    }
-
-    public function updateWith($source, Movie $movie)
-    {
-        $this->sources[strtolower($source)] = $movie->provideMovieInterest();
     }
 }
