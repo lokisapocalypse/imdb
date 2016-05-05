@@ -4,6 +4,9 @@ namespace Fusani\Movies\Domain\Model\Movie;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @covers Fusani\Movies\Domain\Model\Movie\Movie
+ */
 class MovieTest extends PHPUnit_Framework_TestCase
 {
     protected $expected;
@@ -21,6 +24,24 @@ class MovieTest extends PHPUnit_Framework_TestCase
             'plot' => null,
         ];
         $this->movie = new Movie(15, 'Guardians of the Galaxy', 'movie', 2014);
+    }
+
+    public function testAddSource()
+    {
+        $interest = $this->movie->provideMovieInterest();
+        $this->assertEquals([], $interest['sources']);
+
+        $this->movie->addSource('free', 'Netflix', 'www.netflix.com');
+        $this->movie->addSource('purchase', 'Amazon', 'www.amazon.com');
+
+        $interest = $this->movie->provideMovieInterest();
+
+        $this->assertNotEquals([], $interest['sources']);
+    }
+
+    public function testIdentity()
+    {
+        $this->assertEquals(15, $this->movie->identity());
     }
 
     public function testIsTheSameAsWildlyMismatched()
@@ -69,14 +90,5 @@ class MovieTest extends PHPUnit_Framework_TestCase
     public function testTitle()
     {
         $this->assertEquals('Guardians of the Galaxy', $this->movie->title());
-    }
-
-    public function testUpdatedWith()
-    {
-        $movie = new Movie(16, 'Guardians of the Galaxy', 'movie', 2014);
-        $this->movie->updateWith('Netflix', $movie);
-
-        $expected = array_merge($this->expected, ['sources' => ['netflix' => $movie->provideMovieInterest()]]);
-        $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 }
