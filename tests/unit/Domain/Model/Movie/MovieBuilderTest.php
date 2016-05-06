@@ -52,6 +52,30 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('tvshow', $interest['type']);
     }
 
+    public function testBuildWithGuideboxFirstAiredSet()
+    {
+        $data = array_merge($this->guideBoxMovie(), ['first_aired' => '2014-05-26', 'release_year' => null]);
+
+        $movie = $this->builder->buildFromGuidebox($data);
+
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals(2014, $interest['year']);
+    }
+
+    public function testBuildWithGuideboxWithArtwork()
+    {
+        $data = array_merge($this->guideBoxMovie(), ['artwork_208x117' => 'my poster', 'poster_120x171' => null]);
+
+        $movie = $this->builder->buildFromGuidebox($data);
+
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals('my poster', $interest['poster']);
+    }
+
     public function testBuildWithGuideboxSetPlot()
     {
         $data = array_merge($this->guideBoxMovie(), ['overview' => 'Superheros save the world']);
