@@ -8,7 +8,7 @@ class MovieRepositoryFactory
 {
     public function createRepository($apikey, $region = 'US')
     {
-        $adapter = new Adapter\GuzzleAdapter("http://api-public.guidebox.com/v1.43/$region/$apikey");
+        $adapter = new Adapter\GuzzleAdapter("http://api-public.guidebox.com/v1.43/$region/$apikey/");
         return new MovieRepository($adapter);
     }
 }
