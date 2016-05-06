@@ -15,18 +15,31 @@ class MovieBuilder
             $movie = true;
         }
 
+        $year = null;
+
+        if (!empty($data['release_year'])) {
+            $year = $data['release_year'];
+        } else if (!empty($data['first_aired'])) {
+            $year = new \DateTime($data['first_aired']);
+            $year = $year->format('Y');
+        }
+
         $movie = new Movie(
             $data['id'],
             $data['title'],
             $movie ? 'movie' : 'tvshow',
-            $data['release_year']
+            $year
         );
 
         if (!empty($data['overview'])) {
             $movie->setPlot($data['overview']);
         }
 
-        $movie->setPoster($data['poster_120x171']);
+        if (!empty($data['poster_120x171'])) {
+            $movie->setPoster($data['poster_120x171']);
+        } else if (!empty($data['artwork_208x117'])) {
+            $movie->setPoster($data['artwork_208x117']);
+        }
 
         $sources = [];
 

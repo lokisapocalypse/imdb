@@ -19,7 +19,7 @@ class MovieRepository implements Movie\MovieRepository
     public function manyWithTitleLike($title)
     {
         $movies = [];
-        $result = $this->adapter->get("/search/title/$title", []);
+        $result = $this->adapter->get("search/title/$title", []);
 
         foreach ($result['results'] as $movie) {
             $movies[] = $this->movieBuilder->buildFromGuidebox($movie);
@@ -30,7 +30,7 @@ class MovieRepository implements Movie\MovieRepository
 
     public function oneOfId($id)
     {
-        $result = $this->adapter->get("/movie/$id", []);
+        $result = $this->adapter->get("movie/$id", []);
 
         if (empty($result)) {
             throw new Movie\NotFoundException('No movie was found.');
@@ -42,7 +42,7 @@ class MovieRepository implements Movie\MovieRepository
     public function oneOfTitle($title, $year = null)
     {
         $movies = [];
-        $result = $this->adapter->get("/search/title/$title/exact", []);
+        $result = $this->adapter->get("search/title/$title/exact", []);
 
         if (empty($year) && !empty($result['results'])) {
             return $this->movieBuilder->buildFromGuidebox($result['results'][0]);
