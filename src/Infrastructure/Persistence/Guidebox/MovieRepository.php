@@ -2,6 +2,7 @@
 
 namespace Fusani\Movies\Infrastructure\Persistence\Guidebox;
 
+use DateTime;
 use Fusani\Movies\Domain\Model\Movie;
 use Fusani\Movies\Infrastructure\Adapter;
 
@@ -42,7 +43,7 @@ class MovieRepository implements Movie\MovieRepository
     public function oneOfTitle($title, $year = null)
     {
         $movies = [];
-        $result = $this->adapter->get("search/title/$title/exact", []);
+        $result = $this->adapter->get("search/movie/title/$title/exact", []);
 
         if (empty($year) && !empty($result['results'])) {
             return $this->movieBuilder->buildFromGuidebox($result['results'][0]);
