@@ -2,7 +2,6 @@
 
 namespace Fusani\Movies\Infrastructure\Persistence\Guidebox;
 
-use DateTime;
 use Fusani\Movies\Domain\Model\Movie;
 use Fusani\Movies\Infrastructure\Adapter;
 

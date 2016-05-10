@@ -19,7 +19,7 @@ class MovieBuilder
 
         if (!empty($data['release_year'])) {
             $year = $data['release_year'];
-        } else if (!empty($data['first_aired'])) {
+        } elseif (!empty($data['first_aired'])) {
             $year = new \DateTime($data['first_aired']);
             $year = $year->format('Y');
         }
@@ -37,7 +37,7 @@ class MovieBuilder
 
         if (!empty($data['poster_120x171'])) {
             $movie->setPoster($data['poster_120x171']);
-        } else if (!empty($data['artwork_208x117'])) {
+        } elseif (!empty($data['artwork_208x117'])) {
             $movie->setPoster($data['artwork_208x117']);
         }
 
