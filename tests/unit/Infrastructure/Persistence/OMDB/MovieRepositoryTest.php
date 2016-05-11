@@ -23,6 +23,81 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository = new MovieRepository($this->adapter);
     }
 
+    public function testManyWithTitleNoMatches()
+    {
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue(['Response' => 'False']));
+
+        $response = $this->repository->manyWithTitle('Guardians');
+
+        $this->assertEquals([], $response);
+    }
+
+    public function testManyWithTitleMatchesButDoesntMatchTitle()
+    {
+        $response = [
+            'Response' => 'True',
+            'Search' => [
+                [
+                    'Title' => 'Ghostbusters',
+                    'Poster' => 'www.ghostbustersposter.com',
+                    'Type' => 'movie',
+                    'Year' => 1984,
+                    'imdbID' => 15,
+                ],
+                [
+                    'Title' => 'Ghost',
+                    'Poster' => 'www.ghostposter.com',
+                    'Type' => 'movie',
+                    'Year' => 1990,
+                    'imdbID' => 150,
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($response));
+
+        $response = $this->repository->manyWithTitle('Guardians');
+
+        $this->assertEquals([], $response);
+    }
+
+    public function testManyWithTitleMatchesWithActualMatches()
+    {
+        $response = [
+            'Response' => 'True',
+            'Search' => [
+                [
+                    'Title' => 'Ghostbusters',
+                    'Poster' => 'www.ghostbustersposter.com',
+                    'Type' => 'movie',
+                    'Year' => 1984,
+                    'imdbID' => 15,
+                ],
+                [
+                    'Title' => 'Ghost',
+                    'Poster' => 'www.ghostposter.com',
+                    'Type' => 'movie',
+                    'Year' => 1990,
+                    'imdbID' => 150,
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($response));
+
+        $response = $this->repository->manyWithTitle('Ghost');
+
+        $this->assertNotEquals([], $response);
+        $this->assertEquals(1, count($response));
+        $this->assertInstanceOf(Movie\Movie::class, $response[0]);
+    }
+
     public function testManyWithTitleLikeNoMatches()
     {
         $this->adapter->expects($this->once())

@@ -16,9 +16,28 @@ class MovieRepository implements Movie\MovieRepository
         $this->movieBuilder = new Movie\MovieBuilder();
     }
 
+    protected function encode($str)
+    {
+        return urlencode(urlencode(urlencode($str)));
+    }
+
+    public function manyWithTitle($title)
+    {
+        $movies = [];
+        $title = $this->encode($title);
+        $result = $this->adapter->get("search/movie/title/$title/exact", []);
+
+        foreach ($result['results'] as $movie) {
+            $movies[] = $this->movieBuilder->buildFromGuidebox($movie);
+        }
+
+        return $movies;
+    }
+
     public function manyWithTitleLike($title)
     {
         $movies = [];
+        $title = $this->encode($title);
         $result = $this->adapter->get("search/title/$title", []);
 
         foreach ($result['results'] as $movie) {
@@ -30,6 +49,7 @@ class MovieRepository implements Movie\MovieRepository
 
     public function oneOfId($id)
     {
+        $id = $this->encode($id);
         $result = $this->adapter->get("movie/$id", []);
 
         if (empty($result)) {
@@ -42,6 +62,8 @@ class MovieRepository implements Movie\MovieRepository
     public function oneOfTitle($title, $year = null)
     {
         $movies = [];
+        $title = $this->encode($title);
+
         $result = $this->adapter->get("search/movie/title/$title/exact", []);
 
         if (empty($year) && !empty($result['results'])) {

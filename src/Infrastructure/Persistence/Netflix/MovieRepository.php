@@ -22,6 +22,12 @@ class MovieRepository implements Movie\MovieRepository
         $this->movieBuilder = new Movie\MovieBuilder();
     }
 
+    public function manyWithTitle($title)
+    {
+        // unfortunately, this api does not support this kind of method
+        throw new NotYetImplementedException();
+    }
+
     public function manyWithTitleLike($title)
     {
         // unfortunately, this api does not support this kind of method
