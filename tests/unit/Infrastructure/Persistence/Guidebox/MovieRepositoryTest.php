@@ -23,6 +23,50 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository = new MovieRepository($this->adapter);
     }
 
+    public function testManyWithTitleNoMatches()
+    {
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue(['results' => []]));
+
+        $movies = $this->repository->manyWithTitle('Guardians');
+
+        $this->assertEquals([], $movies);
+    }
+
+    public function testManyWithTitleMatches()
+    {
+        $movieData = [
+            'results' => [
+                [
+                    'id' => 15,
+                    'title' => 'Guardians of the Galaxy',
+                    'release_year' => 2014,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Guardians of the Galaxy II',
+                    'release_year' => 2018,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($movieData));
+
+        $movies = $this->repository->manyWithTitle('Guardians');
+
+        $this->assertNotEquals([], $movies);
+
+        foreach ($movies as $movie) {
+            $this->assertNotNull($movie);
+            $this->assertInstanceOf(Movie\Movie::class, $movie);
+        }
+    }
+
     public function testManyWithTitleLikeNoMatches()
     {
         $this->adapter->expects($this->once())

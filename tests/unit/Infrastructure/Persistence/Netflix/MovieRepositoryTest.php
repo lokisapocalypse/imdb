@@ -26,6 +26,12 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
     public function testManyWithTitleThrowsException()
     {
         $this->setExpectedException(NotYetImplementedException::class);
+        $response = $this->repository->manyWithTitle('Guardians');
+    }
+
+    public function testManyWithTitleLikeThrowsException()
+    {
+        $this->setExpectedException(NotYetImplementedException::class);
         $response = $this->repository->manyWithTitleLike('Guardians');
     }
 

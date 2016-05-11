@@ -16,6 +16,23 @@ class MovieRepository implements Movie\MovieRepository
         $this->movieBuilder = new Movie\MovieBuilder();
     }
 
+    public function manyWithTitle($title)
+    {
+        $movies = [];
+
+        $result = $this->adapter->get('', ['s' => $title.'*', 'r' => 'json']);
+
+        if ($result['Response'] != 'False') {
+            foreach ($result['Search'] as $item) {
+                if (strtolower($item['Title']) == strtolower($title)) {
+                    $movies[] = $this->movieBuilder->buildFromOmdb($item);
+                }
+            }
+        }
+
+        return $movies;
+    }
+
     public function manyWithTitleLike($title)
     {
         $movies = [];
