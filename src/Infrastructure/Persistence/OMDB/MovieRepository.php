@@ -23,8 +23,16 @@ class MovieRepository implements Movie\MovieRepository
         $result = $this->adapter->get('', ['s' => $title.'*', 'r' => 'json']);
 
         if ($result['Response'] != 'False') {
+            $title = strtolower(
+                preg_replace('/\-(\-)+/', '-', preg_replace('/[^A-Za-z0-9]/', '-', $title))
+            );
+
             foreach ($result['Search'] as $item) {
-                if (strtolower($item['Title']) == strtolower($title)) {
+                $matchedTitle = strtolower(
+                    preg_replace('/\-(\-)+/', '-', preg_replace('/[^A-Za-z0-9]/', '-', $item['Title']))
+                );
+
+                if ($matchedTitle == $title) {
                     $movies[] = $this->movieBuilder->buildFromOmdb($item);
                 }
             }
