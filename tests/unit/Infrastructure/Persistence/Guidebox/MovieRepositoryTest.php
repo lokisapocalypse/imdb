@@ -238,4 +238,68 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
         $movie = $this->repository->oneOfTitle('Guardians of the Galaxy');
     }
+
+    public function testSearchForMovies()
+    {
+        $this->repository->searchForMovies();
+
+        $movieData = [
+            'results' => [
+                [
+                    'id' => 15,
+                    'title' => 'Guardians of the Galaxy',
+                    'release_year' => 2014,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Guardians of the Galaxy',
+                    'release_year' => 2018,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->any())
+            ->method('get')
+            ->with($this->stringContains('movie'))
+            ->will($this->onConsecutiveCalls($movieData, $movieData, $movieData['results'][0], $movieData));
+
+        $this->repository->manyWithTitle('ghost');
+        $this->repository->manyWithTitleLike('ghost');
+        $this->repository->oneOfId(15);
+        $this->repository->oneOfTitle('ghost');
+    }
+
+    public function testSearchForShows()
+    {
+        $this->repository->searchForShows();
+
+        $movieData = [
+            'results' => [
+                [
+                    'id' => 15,
+                    'title' => 'Guardians of the Galaxy',
+                    'release_year' => 2014,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Guardians of the Galaxy',
+                    'release_year' => 2018,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->any())
+            ->method('get')
+            ->with($this->stringContains('show'))
+            ->will($this->onConsecutiveCalls($movieData, $movieData, $movieData['results'][0], $movieData));
+
+        $this->repository->manyWithTitle('ghost');
+        $this->repository->manyWithTitleLike('ghost');
+        $this->repository->oneOfId(15);
+        $this->repository->oneOfTitle('ghost');
+    }
 }

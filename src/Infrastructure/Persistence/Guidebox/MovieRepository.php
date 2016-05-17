@@ -9,11 +9,13 @@ class MovieRepository implements Movie\MovieRepository
 {
     protected $adapter;
     protected $movieBuilder;
+    protected $type;
 
     public function __construct(Adapter\Adapter $adapter)
     {
         $this->adapter = $adapter;
         $this->movieBuilder = new Movie\MovieBuilder();
+        $this->type = 'movie';
     }
 
     protected function encode($str)
@@ -25,7 +27,7 @@ class MovieRepository implements Movie\MovieRepository
     {
         $movies = [];
         $title = $this->encode($title);
-        $result = $this->adapter->get("search/movie/title/$title/exact", []);
+        $result = $this->adapter->get("search/{$this->type}/title/$title/exact", []);
 
         foreach ($result['results'] as $movie) {
             $movies[] = $this->movieBuilder->buildFromGuidebox($movie);
@@ -38,7 +40,7 @@ class MovieRepository implements Movie\MovieRepository
     {
         $movies = [];
         $title = $this->encode($title);
-        $result = $this->adapter->get("search/title/$title", []);
+        $result = $this->adapter->get("search/{$this->type}/title/$title", []);
 
         foreach ($result['results'] as $movie) {
             $movies[] = $this->movieBuilder->buildFromGuidebox($movie);
@@ -50,7 +52,7 @@ class MovieRepository implements Movie\MovieRepository
     public function oneOfId($id)
     {
         $id = $this->encode($id);
-        $result = $this->adapter->get("movie/$id", []);
+        $result = $this->adapter->get("{$this->type}/$id", []);
 
         if (empty($result)) {
             throw new Movie\NotFoundException('No movie was found.');
@@ -64,7 +66,7 @@ class MovieRepository implements Movie\MovieRepository
         $movies = [];
         $title = $this->encode($title);
 
-        $result = $this->adapter->get("search/movie/title/$title/exact", []);
+        $result = $this->adapter->get("search/{$this->type}/title/$title/exact", []);
 
         if (empty($year) && !empty($result['results'])) {
             return $this->movieBuilder->buildFromGuidebox($result['results'][0]);
@@ -77,5 +79,15 @@ class MovieRepository implements Movie\MovieRepository
         }
 
         throw new Movie\NotFoundException('No movie was found.');
+    }
+
+    public function searchForMovies()
+    {
+        $this->type = 'movie';
+    }
+
+    public function searchForShows()
+    {
+        $this->type = 'show';
     }
 }
