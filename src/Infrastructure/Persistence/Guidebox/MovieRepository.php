@@ -14,7 +14,7 @@ class MovieRepository implements Movie\MovieRepository
     public function __construct(Adapter\Adapter $adapter)
     {
         $this->adapter = $adapter;
-        $this->typeBuilder = new Movie\MovieBuilder();
+        $this->movieBuilder = new Movie\MovieBuilder();
         $this->type = 'movie';
     }
 
@@ -30,7 +30,7 @@ class MovieRepository implements Movie\MovieRepository
         $result = $this->adapter->get("search/{$this->type}/title/$title/exact", []);
 
         foreach ($result['results'] as $movie) {
-            $movies[] = $this->typeBuilder->buildFromGuidebox($movie);
+            $movies[] = $this->movieBuilder->buildFromGuidebox($movie);
         }
 
         return $movies;
@@ -43,7 +43,7 @@ class MovieRepository implements Movie\MovieRepository
         $result = $this->adapter->get("search/{$this->type}/title/$title", []);
 
         foreach ($result['results'] as $movie) {
-            $movies[] = $this->typeBuilder->buildFromGuidebox($movie);
+            $movies[] = $this->movieBuilder->buildFromGuidebox($movie);
         }
 
         return $movies;
@@ -58,7 +58,7 @@ class MovieRepository implements Movie\MovieRepository
             throw new Movie\NotFoundException('No movie was found.');
         }
 
-        return $this->typeBuilder->buildFromGuidebox($result);
+        return $this->movieBuilder->buildFromGuidebox($result);
     }
 
     public function oneOfTitle($title, $year = null)
@@ -69,12 +69,12 @@ class MovieRepository implements Movie\MovieRepository
         $result = $this->adapter->get("search/{$this->type}/title/$title/exact", []);
 
         if (empty($year) && !empty($result['results'])) {
-            return $this->typeBuilder->buildFromGuidebox($result['results'][0]);
+            return $this->movieBuilder->buildFromGuidebox($result['results'][0]);
         }
 
         foreach ($result['results'] as $movie) {
             if ($movie['release_year'] == $year) {
-                return $this->typeBuilder->buildFromGuidebox($movie);
+                return $this->movieBuilder->buildFromGuidebox($movie);
             }
         }
 
