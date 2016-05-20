@@ -63,15 +63,13 @@ class MovieRepository implements Movie\MovieRepository
         return $this->oneOf(['i' => $id]);
     }
 
-    public function oneOfTitle($title, $year = null, $debug = false)
+    public function oneOfTitle($title, $year = null)
     {
         $params = ['t' => $title, 'type' => $this->type];
 
         if ($year) {
             $params['y'] = $year;
         }
-
-        if ($debug) $params['debug'] = true;
 
         return $this->oneOf($params);
     }

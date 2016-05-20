@@ -266,7 +266,7 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->repository->manyWithTitle('ghost');
         $this->repository->manyWithTitleLike('ghost');
-        $this->repository->oneOfTitle('ghost', null, true);
+        $this->repository->oneOfTitle('ghost');
     }
 
     public function testSearchForShows()
@@ -304,6 +304,6 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->repository->manyWithTitle('ghost');
         $this->repository->manyWithTitleLike('ghost');
-        $this->repository->oneOfTitle('ghost', null, true);
+        $this->repository->oneOfTitle('ghost');
     }
 }
