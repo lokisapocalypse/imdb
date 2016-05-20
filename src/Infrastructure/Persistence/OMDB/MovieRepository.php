@@ -9,18 +9,20 @@ class MovieRepository implements Movie\MovieRepository
 {
     protected $adapter;
     protected $movieBuilder;
+    protected $type;
 
     public function __construct(Adapter\Adapter $adapter)
     {
         $this->adapter = $adapter;
         $this->movieBuilder = new Movie\MovieBuilder();
+        $this->type = 'movie';
     }
 
     public function manyWithTitle($title)
     {
         $movies = [];
 
-        $result = $this->adapter->get('', ['s' => $title.'*', 'r' => 'json']);
+        $result = $this->adapter->get('', ['s' => $title.'*', 'r' => 'json', 'type' => $this->type]);
 
         if ($result['Response'] != 'False') {
             $title = strtolower(
@@ -45,7 +47,7 @@ class MovieRepository implements Movie\MovieRepository
     {
         $movies = [];
 
-        $result = $this->adapter->get('', ['s' => $title.'*', 'r' => 'json']);
+        $result = $this->adapter->get('', ['s' => $title.'*', 'r' => 'json', 'type' => $this->type]);
 
         if ($result['Response'] != 'False') {
             foreach ($result['Search'] as $item) {
@@ -63,7 +65,7 @@ class MovieRepository implements Movie\MovieRepository
 
     public function oneOfTitle($title, $year = null)
     {
-        $params = ['t' => $title];
+        $params = ['t' => $title, 'type' => $this->type];
 
         if ($year) {
             $params['y'] = $year;
@@ -83,5 +85,15 @@ class MovieRepository implements Movie\MovieRepository
         }
 
         return $this->movieBuilder->buildFromOmdb($result);
+    }
+
+    public function searchForMovies()
+    {
+        $this->type = 'movie';
+    }
+
+    public function searchForShows()
+    {
+        $this->type = 'series';
     }
 }

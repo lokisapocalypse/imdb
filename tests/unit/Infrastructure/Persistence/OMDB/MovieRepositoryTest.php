@@ -230,4 +230,80 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie\Movie::Class, $movie);
     }
+
+    public function testSearchForMovies()
+    {
+        $this->repository->searchForMovies();
+
+        $movieData = [
+            'Response' => true,
+            'Search' => [
+                [
+                    'imdbID' => 150,
+                    'Title' => 'Guardians of the Galaxy',
+                    'Year' => 2014,
+                    'Type' => 'movie',
+                ],
+                [
+                    'imdbID' => 16,
+                    'Title' => 'Guardians of the Galaxy',
+                    'Year' => 2018,
+                    'Type' => 'movie',
+                ],
+            ],
+        ];
+
+        $oneMovie = array_merge(['Response' => 'true'], $movieData['Search'][0]);
+
+        $this->adapter->expects($this->exactly(3))
+            ->method('get')
+            ->with(
+                $this->equalTo(''),
+                $this->callback(function ($param) {
+                    return $param['type'] == 'movie';
+                }))
+            ->will($this->onConsecutiveCalls($movieData, $movieData, $oneMovie));
+
+        $this->repository->manyWithTitle('ghost');
+        $this->repository->manyWithTitleLike('ghost');
+        $this->repository->oneOfTitle('ghost');
+    }
+
+    public function testSearchForShows()
+    {
+        $this->repository->searchForShows();
+
+        $movieData = [
+            'Response' => true,
+            'Search' => [
+                [
+                    'imdbID' => 115,
+                    'Title' => 'Guardians of the Galaxy',
+                    'Year' => 2014,
+                    'Type' => 'movie',
+                ],
+                [
+                    'imdbID' => 16,
+                    'Title' => 'Guardians of the Galaxy',
+                    'Year' => 2018,
+                    'Type' => 'movie',
+                ],
+            ],
+        ];
+
+        $oneMovie = array_merge(['Response' => 'true'], $movieData['Search'][0]);
+
+        $this->adapter->expects($this->exactly(3))
+            ->method('get')
+            ->with(
+                $this->equalTo(''),
+                $this->callback(function ($param) {
+                    return $param['type'] == 'series';
+                }))
+            ->will($this->onConsecutiveCalls($movieData, $movieData, $oneMovie, $movieData));
+
+        $this->repository->manyWithTitle('ghost');
+        $this->repository->manyWithTitleLike('ghost');
+        $this->repository->oneOfTitle('ghost');
+    }
 }

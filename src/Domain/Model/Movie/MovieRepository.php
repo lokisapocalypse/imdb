@@ -8,4 +8,6 @@ interface MovieRepository
     public function manyWithTitleLike($title);
     public function oneOfId($id);
     public function oneOfTitle($title, $year = null);
+    public function searchForMovies();
+    public function searchForShows();
 }
