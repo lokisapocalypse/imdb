@@ -239,6 +239,64 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $movie = $this->repository->oneOfTitle('Guardians of the Galaxy');
     }
 
+    public function testOneOfTitleWithYearNoMatchForTvShow()
+    {
+        $this->setExpectedException(Movie\NotFoundException::class);
+
+        $movieData = [
+            'results' => [
+                [
+                    'id' => 15,
+                    'title' => 'Guardians of the Galaxy',
+                    'first_aired' => '2014-01-01',
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Guardians of the Galaxy',
+                    'first_aired' => '2018-01-01',
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($movieData));
+
+        $movie = $this->repository->oneOfTitle('Guardians of the Galaxy', 2017);
+    }
+
+    public function testOneOfTitleWithYearMatchForTvShow()
+    {
+        $movieData = [
+            'results' => [
+                [
+                    'id' => 15,
+                    'title' => 'Guardians of the Galaxy',
+                    'first_aired' => '2014-01-01',
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Guardians of the Galaxy',
+                    'first_aired' => '2018-01-01',
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($movieData));
+
+        $movie = $this->repository->oneOfTitle('Guardians of the Galaxy', 2018);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie\Movie::class, $movie);
+        $this->assertEquals(16, $movie->identity());
+    }
+
     public function testSearchForMovies()
     {
         $this->repository->searchForMovies();
@@ -294,7 +352,10 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->adapter->expects($this->any())
             ->method('get')
-            ->with($this->stringContains('show'))
+            ->with(
+                $this->callback(function ($url) {
+                    return $url == 'search/title/ghost/exact' || strpos($url, 'show') !== false;
+                }))
             ->will($this->onConsecutiveCalls($movieData, $movieData, $movieData['results'][0], $movieData));
 
         $this->repository->manyWithTitle('ghost');
