@@ -9,12 +9,14 @@ use Fusani\Movies\Infrastructure\Adapter;
 class MovieRepository implements Movie\MovieRepository
 {
     protected $adapter;
+    protected $includeEpisodeDetails;
     protected $movieBuilder;
     protected $type;
 
     public function __construct(Adapter\Adapter $adapter)
     {
         $this->adapter = $adapter;
+        $this->includeEpisodeDetails = false;
         $this->movieBuilder = new Movie\MovieBuilder();
         $this->type = 'movie';
     }
@@ -53,7 +55,14 @@ class MovieRepository implements Movie\MovieRepository
     public function oneOfId($id)
     {
         $id = $this->encode($id);
-        $result = $this->adapter->get("{$this->type}/$id", []);
+
+        $url = "{$this->type}/$id";
+
+        if ($this->type == 'show' && $this->includeEpisodeDetails) {
+            $url .= '/episodes/all/0/25/all/all/true';
+        }
+
+        $result = $this->adapter->get($url, []);
 
         if (empty($result)) {
             throw new Movie\NotFoundException('No movie was found.');
@@ -97,10 +106,24 @@ class MovieRepository implements Movie\MovieRepository
     public function searchForMovies()
     {
         $this->type = 'movie';
+        return $this;
     }
 
     public function searchForShows()
     {
         $this->type = 'show';
+        return $this;
+    }
+
+    public function withEpisodeDetails()
+    {
+        $this->includeEpisodeDetails = true;
+        return $this;
+    }
+
+    public function withoutEpisodeDetails()
+    {
+        $this->includeEpisodeDetails = false;
+        return $this;
     }
 }

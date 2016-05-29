@@ -10,4 +10,6 @@ interface MovieRepository
     public function oneOfTitle($title, $year = null);
     public function searchForMovies();
     public function searchForShows();
+    public function withEpisodeDetails();
+    public function withoutEpisodeDetails();
 }

@@ -57,16 +57,25 @@ class MovieRepository implements Movie\MovieRepository
         return $this->movieBuilder->buildFromNetflix($result);
     }
 
-    /**
-     * @codeCoverageIgnore
-     */
     public function searchForMovies()
     {
         // this function does nothing but is here to fit the interface definition
+        return $this;
     }
 
     public function searchForShows()
     {
         throw new NotYetImplementedException();
+    }
+
+    public function withEpisodeDetails()
+    {
+        throw new NotYetImplementedException();
+    }
+
+    public function withoutEpisodeDetails()
+    {
+        // this function does nothing but is here to fit the interface definition
+        return $this;
     }
 }
