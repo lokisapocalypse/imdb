@@ -140,6 +140,71 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Movie\Movie::class, $movie);
     }
 
+    public function testOneOfIdMovieMatchWithEpisodeDetails()
+    {
+        $movieData = [
+            'id' => 15,
+            'title' => 'Guardians of the Galaxy',
+            'release_year' => 2014,
+            'poster_120x171' => 'www.movieposters.com',
+        ];
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('show/15/episodes/all/0/25/all/all/true'))
+            ->will($this->returnValue($movieData));
+
+        $movie = $this->repository->searchForShows()
+            ->withEpisodeDetails()
+            ->oneOfId(15);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie\Movie::class, $movie);
+    }
+
+    public function testOneOfIdMovieMatchWithoutEpisodeDetailsIsTheSameAsMovieMatch()
+    {
+        $movieData = [
+            'id' => 15,
+            'title' => 'Guardians of the Galaxy',
+            'release_year' => 2014,
+            'poster_120x171' => 'www.movieposters.com',
+        ];
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('show/15'))
+            ->will($this->returnValue($movieData));
+
+        $movie = $this->repository->searchForShows()
+            ->withoutEpisodeDetails()
+            ->oneOfId(15);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie\Movie::class, $movie);
+    }
+
+    public function testOneOfIdMovieMatchWithEpisodeDetailsForMovieDoesNothing()
+    {
+        $movieData = [
+            'id' => 15,
+            'title' => 'Guardians of the Galaxy',
+            'release_year' => 2014,
+            'poster_120x171' => 'www.movieposters.com',
+        ];
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->with($this->equalTo('movie/15'))
+            ->will($this->returnValue($movieData));
+
+        $movie = $this->repository->withoutEpisodeDetails()
+            ->oneOfId(15);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie\Movie::class, $movie);
+    }
+
     public function testOneOfTitleNoYearWithResults()
     {
         $movieData = [
@@ -299,7 +364,10 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testSearchForMovies()
     {
-        $this->repository->searchForMovies();
+        $repository = $this->repository->searchForMovies();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+        $this->assertEquals($repository, $this->repository);
 
         $movieData = [
             'results' => [
@@ -331,7 +399,10 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testSearchForShows()
     {
-        $this->repository->searchForShows();
+        $repository = $this->repository->searchForShows();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+        $this->assertEquals($repository, $this->repository);
 
         $movieData = [
             'results' => [
@@ -362,5 +433,21 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->manyWithTitleLike('ghost');
         $this->repository->oneOfId(15);
         $this->repository->oneOfTitle('ghost');
+    }
+
+    public function testWithEpisodeDetails()
+    {
+        $repository = $this->repository->withEpisodeDetails();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+        $this->assertEquals($repository, $this->repository);
+    }
+
+    public function testWithoutEpisodeDetails()
+    {
+        $repository = $this->repository->withEpisodeDetails();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+        $this->assertEquals($repository, $this->repository);
     }
 }

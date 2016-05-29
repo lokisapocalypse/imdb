@@ -93,9 +93,31 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Movie\Movie::Class, $movie);
     }
 
+    public function testSearchingForMovies()
+    {
+        $repository = $this->repository->searchForMovies();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+        $this->assertEquals($repository, $this->repository);
+    }
+
     public function testSearchingForShowsIsntImplemented()
     {
         $this->setExpectedException(NotYetImplementedException::class);
         $this->repository->searchForShows();
+    }
+
+    public function testWithEpisodeDetailsIsntImplemented()
+    {
+        $this->setExpectedException(NotYetImplementedException::class);
+        $this->repository->withEpisodeDetails();
+    }
+
+    public function testWithoutEpisodeDetails()
+    {
+        $repository = $this->repository->withoutEpisodeDetails();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+        $this->assertEquals($repository, $this->repository);
     }
 }

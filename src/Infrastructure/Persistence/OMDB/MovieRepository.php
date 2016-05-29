@@ -90,10 +90,23 @@ class MovieRepository implements Movie\MovieRepository
     public function searchForMovies()
     {
         $this->type = 'movie';
+        return $this;
     }
 
     public function searchForShows()
     {
         $this->type = 'series';
+        return $this;
+    }
+
+    public function withEpisodeDetails()
+    {
+        throw new NotYetImplementedException();
+    }
+
+    public function withoutEpisodeDetails()
+    {
+        // this function does nothing but is here to fit the interface definition
+        return $this;
     }
 }

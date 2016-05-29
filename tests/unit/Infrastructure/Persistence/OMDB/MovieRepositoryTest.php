@@ -233,7 +233,10 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testSearchForMovies()
     {
-        $this->repository->searchForMovies();
+        $repository = $this->repository->searchForMovies();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+        $this->assertEquals($repository, $this->repository);
 
         $movieData = [
             'Response' => true,
@@ -271,7 +274,10 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
 
     public function testSearchForShows()
     {
-        $this->repository->searchForShows();
+        $repository = $this->repository->searchForShows();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+        $this->assertEquals($repository, $this->repository);
 
         $movieData = [
             'Response' => true,
@@ -305,5 +311,19 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->manyWithTitle('ghost');
         $this->repository->manyWithTitleLike('ghost');
         $this->repository->oneOfTitle('ghost');
+    }
+
+    public function testWithEpisodeDetailsIsntImplemented()
+    {
+        $this->setExpectedException(NotYetImplementedException::class);
+        $this->repository->withEpisodeDetails();
+    }
+
+    public function testWithoutEpisodeDetails()
+    {
+        $repository = $this->repository->withoutEpisodeDetails();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+        $this->assertEquals($repository, $this->repository);
     }
 }
