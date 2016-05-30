@@ -23,6 +23,61 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository = new MovieRepository($this->adapter);
     }
 
+    public function testManyEpisodesOfShowNoMatches()
+    {
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue(['results' => []]));
+
+        $movie = new Movie\Movie(15, 'Guardians of the Galaxy', 'show', 2014);
+        $movie = $this->repository->manyEpisodesOfShow($movie, 15);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie\Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals([], $interest['episodes']);
+    }
+
+    public function testManyEpisodesOfShowWithMatches()
+    {
+        $movieData = [
+            'results' => [
+                [
+                    'id' => 15,
+                    'title' => 'Guardians of the Galaxy',
+                    'first_aired' => '2014-05-28',
+                    'thumbnail_208x117' => 'www.movieposters.com',
+                    'season_number' => 1,
+                    'episode_number' => 1,
+                    'overview' => 'Superheros save the day',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Guardians of the Galaxy II',
+                    'first_aired' => '2018-08-21',
+                    'thumbnail_208x117' => 'www.movieposters.com',
+                    'season_number' => 1,
+                    'episode_number' => 2,
+                    'overview' => 'Superheros save the day again',
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue($movieData));
+
+        $movie = new Movie\Movie(15, 'Guardians of the Galaxy', 'show', 2014);
+        $movie = $this->repository->manyEpisodesOfShow($movie, 15);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie\Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals(2, count($interest['episodes']));
+    }
+
     public function testManyWithTitleNoMatches()
     {
         $this->adapter->expects($this->once())
@@ -135,71 +190,6 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue($movieData));
 
         $movie = $this->repository->oneOfId(15);
-
-        $this->assertNotNull($movie);
-        $this->assertInstanceOf(Movie\Movie::class, $movie);
-    }
-
-    public function testOneOfIdMovieMatchWithEpisodeDetails()
-    {
-        $movieData = [
-            'id' => 15,
-            'title' => 'Guardians of the Galaxy',
-            'release_year' => 2014,
-            'poster_120x171' => 'www.movieposters.com',
-        ];
-
-        $this->adapter->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('show/15/episodes/all/0/25/all/all/true'))
-            ->will($this->returnValue($movieData));
-
-        $movie = $this->repository->searchForShows()
-            ->withEpisodeDetails()
-            ->oneOfId(15);
-
-        $this->assertNotNull($movie);
-        $this->assertInstanceOf(Movie\Movie::class, $movie);
-    }
-
-    public function testOneOfIdMovieMatchWithoutEpisodeDetailsIsTheSameAsMovieMatch()
-    {
-        $movieData = [
-            'id' => 15,
-            'title' => 'Guardians of the Galaxy',
-            'release_year' => 2014,
-            'poster_120x171' => 'www.movieposters.com',
-        ];
-
-        $this->adapter->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('show/15'))
-            ->will($this->returnValue($movieData));
-
-        $movie = $this->repository->searchForShows()
-            ->withoutEpisodeDetails()
-            ->oneOfId(15);
-
-        $this->assertNotNull($movie);
-        $this->assertInstanceOf(Movie\Movie::class, $movie);
-    }
-
-    public function testOneOfIdMovieMatchWithEpisodeDetailsForMovieDoesNothing()
-    {
-        $movieData = [
-            'id' => 15,
-            'title' => 'Guardians of the Galaxy',
-            'release_year' => 2014,
-            'poster_120x171' => 'www.movieposters.com',
-        ];
-
-        $this->adapter->expects($this->once())
-            ->method('get')
-            ->with($this->equalTo('movie/15'))
-            ->will($this->returnValue($movieData));
-
-        $movie = $this->repository->withoutEpisodeDetails()
-            ->oneOfId(15);
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie\Movie::class, $movie);
@@ -433,21 +423,5 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->manyWithTitleLike('ghost');
         $this->repository->oneOfId(15);
         $this->repository->oneOfTitle('ghost');
-    }
-
-    public function testWithEpisodeDetails()
-    {
-        $repository = $this->repository->withEpisodeDetails();
-        $this->assertNotNull($repository);
-        $this->assertInstanceOf(MovieRepository::class, $repository);
-        $this->assertEquals($repository, $this->repository);
-    }
-
-    public function testWithoutEpisodeDetails()
-    {
-        $repository = $this->repository->withEpisodeDetails();
-        $this->assertNotNull($repository);
-        $this->assertInstanceOf(MovieRepository::class, $repository);
-        $this->assertEquals($repository, $this->repository);
     }
 }

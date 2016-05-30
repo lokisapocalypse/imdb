@@ -9,14 +9,14 @@ use Fusani\Movies\Infrastructure\Adapter;
 class MovieRepository implements Movie\MovieRepository
 {
     protected $adapter;
-    protected $includeEpisodeDetails;
+    protected $episodeBuilder;
     protected $movieBuilder;
     protected $type;
 
     public function __construct(Adapter\Adapter $adapter)
     {
         $this->adapter = $adapter;
-        $this->includeEpisodeDetails = false;
+        $this->episodeBuilder = new Movie\EpisodeBuilder();
         $this->movieBuilder = new Movie\MovieBuilder();
         $this->type = 'movie';
     }
@@ -24,6 +24,31 @@ class MovieRepository implements Movie\MovieRepository
     protected function encode($str)
     {
         return urlencode(urlencode(urlencode($str)));
+    }
+
+    public function manyEpisodesOfShow(
+        Movie\Movie $movie,
+        $id,
+        $includeLinks = false,
+        $reverseOrder = false,
+        $season = 'all',
+        $startAt = 0,
+        $limit = 25,
+        $sources = 'all',
+        $platform = 'all'
+    ) {
+        $id = $this->encode($id);
+
+        $url = "show/$id/episodes/$season/$startAt/$limit/$sources/$platform/$includeLinks";
+        $params = ['reverse_ordering' => $reverseOrder ? 'true' : 'false'];
+
+        $result = $this->adapter->get($url, $params);
+
+        foreach ($result['results'] as $episode) {
+            $movie->addEpisode($this->episodeBuilder->buildFromGuideBox($episode));
+        }
+
+        return $movie;
     }
 
     public function manyWithTitle($title)
@@ -56,13 +81,7 @@ class MovieRepository implements Movie\MovieRepository
     {
         $id = $this->encode($id);
 
-        $url = "{$this->type}/$id";
-
-        if ($this->type == 'show' && $this->includeEpisodeDetails) {
-            $url .= '/episodes/all/0/25/all/all/true';
-        }
-
-        $result = $this->adapter->get($url, []);
+        $result = $this->adapter->get("{$this->type}/$id", []);
 
         if (empty($result)) {
             throw new Movie\NotFoundException('No movie was found.');
@@ -112,18 +131,6 @@ class MovieRepository implements Movie\MovieRepository
     public function searchForShows()
     {
         $this->type = 'show';
-        return $this;
-    }
-
-    public function withEpisodeDetails()
-    {
-        $this->includeEpisodeDetails = true;
-        return $this;
-    }
-
-    public function withoutEpisodeDetails()
-    {
-        $this->includeEpisodeDetails = false;
         return $this;
     }
 }

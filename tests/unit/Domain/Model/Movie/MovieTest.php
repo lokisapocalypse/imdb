@@ -16,6 +16,7 @@ class MovieTest extends PHPUnit_Framework_TestCase
     {
         $this->expected = [
             'id' => 15,
+            'episodes' => [],
             'title' => 'Guardians of the Galaxy',
             'year' => 2014,
             'type' => 'movie',
@@ -24,6 +25,16 @@ class MovieTest extends PHPUnit_Framework_TestCase
             'plot' => null,
         ];
         $this->movie = new Movie(15, 'Guardians of the Galaxy', 'movie', 2014);
+    }
+
+    public function testAddEpisode()
+    {
+        $episode = new Episode(15, 'Guardians of Galaxy', '2014-05-28', 1, 1);
+
+        $this->movie->addEpisode($episode);
+
+        $interest = $this->movie->provideMovieInterest();
+        $this->assertEquals($interest, array_merge($this->expected, ['episodes' => [$episode->provideEpisodeInterest()]]));
     }
 
     public function testAddSource()
@@ -37,6 +48,29 @@ class MovieTest extends PHPUnit_Framework_TestCase
         $interest = $this->movie->provideMovieInterest();
 
         $this->assertNotEquals([], $interest['sources']);
+    }
+
+    public function testHasSourceWithNoSources()
+    {
+        $this->assertFalse($this->movie->hasSource('doesnt', 'exist'));
+    }
+
+    public function testHasSourceNoMatchingTypes()
+    {
+        $this->movie->addSource('free', 'Netflix', 'www.netflix.com');
+        $this->assertFalse($this->movie->hasSource('Netflix', 'paid'));
+    }
+
+    public function testHasSourceNoMatchingNames()
+    {
+        $this->movie->addSource('free', 'Netflix', 'www.netflix.com');
+        $this->assertFalse($this->movie->hasSource('Netflux', 'free'));
+    }
+
+    public function testHasSourceWithMatch()
+    {
+        $this->movie->addSource('free', 'Netflix', 'www.netflix.com');
+        $this->assertTrue($this->movie->hasSource('Netflix', 'free'));
     }
 
     public function testIdentity()
