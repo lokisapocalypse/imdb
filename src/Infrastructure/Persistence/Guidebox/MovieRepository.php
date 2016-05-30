@@ -10,14 +10,12 @@ class MovieRepository implements Movie\MovieRepository
 {
     protected $adapter;
     protected $episodeBuilder;
-    protected $includeEpisodeDetails;
     protected $movieBuilder;
     protected $type;
 
     public function __construct(Adapter\Adapter $adapter)
     {
         $this->adapter = $adapter;
-        $this->includeEpisodeDetails = false;
         $this->episodeBuilder = new Movie\EpisodeBuilder();
         $this->movieBuilder = new Movie\MovieBuilder();
         $this->type = 'movie';
