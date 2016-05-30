@@ -2,30 +2,25 @@
 
 namespace Fusani\Movies\Domain\Model\Movie;
 
-class Movie
+class Episode
 {
     protected $id;
-    protected $episodes;
+    protected $episode;
+    protected $firstAired;
     protected $plot;
     protected $poster;
+    protected $season;
     protected $sources;
     protected $title;
-    protected $type;
-    protected $year;
 
-    public function __construct($id, $title, $type, $year)
+    public function __construct($id, $title, $firstAired, $season, $episode)
     {
+        $this->episode = $episode;
+        $this->firstAired = $firstAired;
         $this->id = $id;
-        $this->episodes = [];
+        $this->season = $season;
         $this->sources = [];
         $this->title = $title;
-        $this->type = $type;
-        $this->year = $year;
-    }
-
-    public function addEpisode(Episode $episode)
-    {
-        $this->episodes[] = $episode;
     }
 
     public function addSource($type, $name, $link, array $details = [])
@@ -39,30 +34,7 @@ class Movie
         return $this->id;
     }
 
-    public function hasSource($name, $type)
-    {
-        if (empty($this->sources[$type])) {
-            return false;
-        }
-
-        foreach ($this->sources[$type] as $source) {
-            $interest = $source->provideSourceInterest();
-
-            if ($interest['name'] == $name) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function isTheSameAs(Movie $movie)
-    {
-        return $this->title == $movie->title
-            && $this->year == $movie->year;
-    }
-
-    public function provideMovieInterest()
+    public function provideEpisodeInterest()
     {
         $sources = [];
 
@@ -72,21 +44,15 @@ class Movie
             }
         }
 
-        $episodes = [];
-
-        foreach ($this->episodes as $episode) {
-            $episodes[] = $episode->provideEpisodeInterest();
-        }
-
         return [
             'id' => $this->id,
-            'episodes' => $episodes,
+            'episode' => $this->episode,
+            'firstAired' => $this->firstAired,
             'plot' => $this->plot,
             'poster' => $this->poster,
+            'season' => $this->season,
             'sources' => $sources,
             'title' => $this->title,
-            'type' => $this->type,
-            'year' => $this->year,
         ];
     }
 

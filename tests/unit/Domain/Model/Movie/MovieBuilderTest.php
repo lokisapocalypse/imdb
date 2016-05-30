@@ -149,6 +149,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $expected = [
             'id' => 15,
+            'episodes' => [],
             'plot' => 'Superheros save the world',
             'poster' => null,
             'sources' => [],
@@ -177,6 +178,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $expected = [
             'id' => 15,
             'plot' => null,
+            'episodes' => [],
             'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
             'title' => 'Guardians of the Galaxy',
             'sources' => [],
@@ -204,6 +206,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $expected = [
             'id' => 1234,
+            'episodes' => [],
             'plot' => 'Superheros save the galaxy',
             'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
             'title' => 'Guardians of the Galaxy',

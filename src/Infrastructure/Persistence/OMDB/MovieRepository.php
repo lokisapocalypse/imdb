@@ -18,6 +18,20 @@ class MovieRepository implements Movie\MovieRepository
         $this->type = 'movie';
     }
 
+    public function manyEpisodesOfShow(
+        Movie\Movie $movie,
+        $id,
+        $includeLinks = false,
+        $reverseOrder = false,
+        $season = 'all',
+        $startAt = 0,
+        $limit = 25,
+        $sources = 'all',
+        $platform = 'all'
+    ) {
+        throw new NotYetImplementedException();
+    }
+
     public function manyWithTitle($title)
     {
         $movies = [];
@@ -96,17 +110,6 @@ class MovieRepository implements Movie\MovieRepository
     public function searchForShows()
     {
         $this->type = 'series';
-        return $this;
-    }
-
-    public function withEpisodeDetails()
-    {
-        throw new NotYetImplementedException();
-    }
-
-    public function withoutEpisodeDetails()
-    {
-        // this function does nothing but is here to fit the interface definition
         return $this;
     }
 }

@@ -23,6 +23,12 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository = new MovieRepository($this->adapter);
     }
 
+    public function testManyEpisodesOfShowIsntImplemented()
+    {
+        $this->setExpectedException(NotYetImplementedException::class);
+        $this->repository->manyEpisodesOfShow(new Movie\Movie(15, 'Guardians of the Galaxy', 'movie', 2014), 15);
+    }
+
     public function testManyWithTitleNoMatches()
     {
         $this->adapter->expects($this->once())
@@ -311,19 +317,5 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->manyWithTitle('ghost');
         $this->repository->manyWithTitleLike('ghost');
         $this->repository->oneOfTitle('ghost');
-    }
-
-    public function testWithEpisodeDetailsIsntImplemented()
-    {
-        $this->setExpectedException(NotYetImplementedException::class);
-        $this->repository->withEpisodeDetails();
-    }
-
-    public function testWithoutEpisodeDetails()
-    {
-        $repository = $this->repository->withoutEpisodeDetails();
-        $this->assertNotNull($repository);
-        $this->assertInstanceOf(MovieRepository::class, $repository);
-        $this->assertEquals($repository, $this->repository);
     }
 }
