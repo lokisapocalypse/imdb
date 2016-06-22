@@ -70,6 +70,10 @@ class Movie
             foreach ($sourceList as $source) {
                 $sources[$type][] = $source->provideSourceInterest();
             }
+
+            usort($sources[$type], function ($a, $b) {
+                return $a['name'] > $b['name'];
+            });
         }
 
         $episodes = [];

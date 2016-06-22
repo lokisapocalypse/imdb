@@ -107,6 +107,40 @@ class MovieTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($this->expected, $this->movie->provideMovieInterest());
     }
 
+    public function testProvideInterestSortedSources()
+    {
+        $this->movie->addSource('subscription', 'Netflix', 'www.netflix.com');
+        $this->movie->addSource('subscription', 'Amazon', 'www.amazon.com');
+        $this->movie->addSource('subscription', 'VUDU', 'www.vudu.com');
+
+        $expected = array_merge($this->expected, [
+            'sources' => [
+                'subscription' => [
+                    [
+                        'details' => [],
+                        'link' => 'www.amazon.com',
+                        'name' => 'Amazon',
+                        'type' => 'subscription',
+                    ],
+                    [
+                        'details' => [],
+                        'link' => 'www.netflix.com',
+                        'name' => 'Netflix',
+                        'type' => 'subscription',
+                    ],
+                    [
+                        'details' => [],
+                        'link' => 'www.vudu.com',
+                        'name' => 'VUDU',
+                        'type' => 'subscription',
+                    ],
+                ],
+            ],
+        ]);
+
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
     public function testSetPoster()
     {
         $this->movie->setPoster('www.movieposters.com/guardians-of-the-galaxy');
