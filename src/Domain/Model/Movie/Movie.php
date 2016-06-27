@@ -72,7 +72,7 @@ class Movie
             }
 
             usort($sources[$type], function ($a, $b) {
-                return $a['name'] > $b['name'];
+                return strcasecmp($a['name'], $b['name']);
             });
         }
 

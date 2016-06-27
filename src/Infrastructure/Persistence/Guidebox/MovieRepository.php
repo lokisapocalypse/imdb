@@ -110,7 +110,7 @@ class MovieRepository implements Movie\MovieRepository
         foreach ($result['results'] as $movie) {
             if (!empty($movie['release_year']) && $movie['release_year'] == $year) {
                 return $this->movieBuilder->buildFromGuidebox($movie);
-            } else if (!empty($movie['first_aired'])) {
+            } elseif (!empty($movie['first_aired'])) {
                 $firstAired = new DateTime($movie['first_aired']);
 
                 if ($firstAired->format('Y') == $year) {
