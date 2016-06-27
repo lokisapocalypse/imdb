@@ -5,6 +5,8 @@ namespace Fusani\Movies\Domain\Model\Movie;
 class Movie
 {
     protected $id;
+    protected $cast;
+    protected $directors;
     protected $episodes;
     protected $plot;
     protected $poster;
@@ -16,6 +18,8 @@ class Movie
     public function __construct($id, $title, $type, $year)
     {
         $this->id = $id;
+        $this->cast = [];
+        $this->directors = [];
         $this->episodes = [];
         $this->sources = [];
         $this->title = $title;
@@ -26,6 +30,16 @@ class Movie
     public function addEpisode(Episode $episode)
     {
         $this->episodes[] = $episode;
+    }
+
+    public function addCast($cast)
+    {
+        $this->cast[] = $cast;
+    }
+
+    public function addDirector($director)
+    {
+        $this->directors[] = $director;
     }
 
     public function addSource($type, $name, $link, array $details = [])
@@ -84,6 +98,8 @@ class Movie
 
         return [
             'id' => $this->id,
+            'cast' => $this->cast,
+            'directors' => $this->directors,
             'episodes' => $episodes,
             'plot' => $this->plot,
             'poster' => $this->poster,

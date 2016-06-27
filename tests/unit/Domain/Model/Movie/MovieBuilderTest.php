@@ -88,6 +88,30 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Superheros save the world', $interest['plot']);
     }
 
+    public function testBuildWithGuideboxSetCast()
+    {
+        $cast = [['name' => 'Chris Pratt'], ['name' => 'Bradley Cooper']];
+        $data = array_merge($this->guideBoxMovie(), ['cast' => $cast]);
+
+        $movie = $this->builder->buildFromGuidebox($data);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals(['Chris Pratt', 'Bradley Cooper'], $interest['cast']);
+    }
+
+    public function testBuildWithGuideboxSetDirectors()
+    {
+        $directors = [['name' => 'James Gunn'], ['name' => 'Stan Lee']];
+        $data = array_merge($this->guideBoxMovie(), ['directors' => $directors]);
+
+        $movie = $this->builder->buildFromGuidebox($data);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals(['James Gunn', 'Stan Lee'], $interest['directors']);
+    }
+
     public function testBuildWithGuideboxHasFreeSources()
     {
         $data = array_merge($this->guideBoxMovie(), ['free_web_sources' => [['display_name' => 'Netflix', 'link' => 'www.netflix.com']]]);
@@ -149,6 +173,8 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $expected = [
             'id' => 15,
+            'cast' => [],
+            'directors' => [],
             'episodes' => [],
             'plot' => 'Superheros save the world',
             'poster' => null,
@@ -177,6 +203,8 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $expected = [
             'id' => 15,
+            'cast' => [],
+            'directors' => [],
             'plot' => null,
             'episodes' => [],
             'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
@@ -206,6 +234,8 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $expected = [
             'id' => 1234,
+            'cast' => [],
+            'directors' => [],
             'episodes' => [],
             'plot' => 'Superheros save the galaxy',
             'poster' => 'www.movieposters.com/guardians-of-the-galaxy',

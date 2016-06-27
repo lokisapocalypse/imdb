@@ -70,6 +70,18 @@ class MovieBuilder
             }
         }
 
+        if (!empty($data['cast'])) {
+            foreach ($data['cast'] as $cast) {
+                $movie->addCast($cast['name']);
+            }
+        }
+
+        if (!empty($data['directors'])) {
+            foreach ($data['directors'] as $director) {
+                $movie->addDirector($director['name']);
+            }
+        }
+
         return $movie;
     }
 
