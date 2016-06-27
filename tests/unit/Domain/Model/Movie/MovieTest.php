@@ -16,6 +16,8 @@ class MovieTest extends PHPUnit_Framework_TestCase
     {
         $this->expected = [
             'id' => 15,
+            'cast' => [],
+            'directors' => [],
             'episodes' => [],
             'title' => 'Guardians of the Galaxy',
             'year' => 2014,
@@ -25,6 +27,28 @@ class MovieTest extends PHPUnit_Framework_TestCase
             'plot' => null,
         ];
         $this->movie = new Movie(15, 'Guardians of the Galaxy', 'movie', 2014);
+    }
+
+    public function testAddCast()
+    {
+        $this->movie->addCast('Bill Murray');
+        $expected = array_merge($this->expected, ['cast' => ['Bill Murray']]);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $this->movie->addCast('Dan Akroyd');
+        $expected = array_merge($this->expected, ['cast' => ['Bill Murray', 'Dan Akroyd']]);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddDirector()
+    {
+        $this->movie->addDirector('Ivan Reitman');
+        $expected = array_merge($this->expected, ['directors' => ['Ivan Reitman']]);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $this->movie->addDirector('Harold Ramis');
+        $expected = array_merge($this->expected, ['directors' => ['Ivan Reitman', 'Harold Ramis']]);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 
     public function testAddEpisode()
