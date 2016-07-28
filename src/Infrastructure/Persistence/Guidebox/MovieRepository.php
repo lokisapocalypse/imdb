@@ -11,6 +11,9 @@ class MovieRepository implements Movie\MovieRepository
     protected $adapter;
     protected $episodeBuilder;
     protected $movieBuilder;
+    protected $threshold;
+    protected $titleSimilarityScoringService;
+    protected $tryFuzzyOnFail;
     protected $type;
 
     public function __construct(Adapter\Adapter $adapter)
@@ -18,7 +21,16 @@ class MovieRepository implements Movie\MovieRepository
         $this->adapter = $adapter;
         $this->episodeBuilder = new Movie\EpisodeBuilder();
         $this->movieBuilder = new Movie\MovieBuilder();
+        $this->threshold = 0;
+        $this->titleSimilarityScoringService = new Movie\TitleSimilarityScoringService();
+        $this->tryFuzzyOnFail = false;
         $this->type = 'movie';
+    }
+
+    public function doNotTryFuzzyOnFail()
+    {
+        $this->tryFuzzyOnFail = false;
+        return $this;
     }
 
     protected function encode($str)
@@ -93,12 +105,12 @@ class MovieRepository implements Movie\MovieRepository
     public function oneOfTitle($title, $year = null)
     {
         $movies = [];
-        $title = $this->encode($title);
+        $encodedTitle = $this->encode($title);
 
         if ($this->type == 'movie') {
-            $url = "search/{$this->type}/title/$title/exact";
+            $url = "search/{$this->type}/title/$encodedTitle/exact";
         } else {
-            $url = "search/title/$title/exact";
+            $url = "search/title/$encodedTitle/exact";
         }
 
         $result = $this->adapter->get($url, []);
@@ -119,6 +131,15 @@ class MovieRepository implements Movie\MovieRepository
             }
         }
 
+        if ($this->tryFuzzyOnFail) {
+            $movies = $this->manyWithTitleLike($title);
+            $result = $this->titleSimilarityScoringService->findClosestMatch($title, $movies);
+
+            if ($result['score'] <= $this->threshold) {
+                return $result['movie'];
+            }
+        }
+
         throw new Movie\NotFoundException('No movie was found.');
     }
 
@@ -131,6 +152,18 @@ class MovieRepository implements Movie\MovieRepository
     public function searchForShows()
     {
         $this->type = 'show';
+        return $this;
+    }
+
+    public function setThreshold($threshold)
+    {
+        $this->threshold = $threshold;
+        return $this;
+    }
+
+    public function tryFuzzyOnFail()
+    {
+        $this->tryFuzzyOnFail = true;
         return $this;
     }
 }

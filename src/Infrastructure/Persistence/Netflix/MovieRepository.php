@@ -22,6 +22,12 @@ class MovieRepository implements Movie\MovieRepository
         $this->movieBuilder = new Movie\MovieBuilder();
     }
 
+    public function doNotTryFuzzyOnFail()
+    {
+        // this api does not support fuzzy matching
+        throw new NotYetImplementedException();
+    }
+
     public function manyEpisodesOfShow(
         Movie\Movie $movie,
         $id,
@@ -79,6 +85,18 @@ class MovieRepository implements Movie\MovieRepository
 
     public function searchForShows()
     {
+        throw new NotYetImplementedException();
+    }
+
+    public function setThreshold($threshold)
+    {
+        // this api does not support fuzzy matching
+        throw new NotYetImplementedException();
+    }
+
+    public function tryFuzzyOnFail()
+    {
+        // this api does not support fuzzy matching
         throw new NotYetImplementedException();
     }
 }

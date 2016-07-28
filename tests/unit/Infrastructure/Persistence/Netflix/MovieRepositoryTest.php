@@ -23,6 +23,12 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository = new MovieRepository($this->adapter);
     }
 
+    public function testDoNotTryFuzzyOnFailIsntImplemented()
+    {
+        $this->setExpectedException(NotYetImplementedException::class);
+        $this->repository->doNotTryFuzzyOnFail();
+    }
+
     public function testManyEpisodesOfShowIsntImplemented()
     {
         $this->setExpectedException(NotYetImplementedException::class);
@@ -111,5 +117,17 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(NotYetImplementedException::class);
         $this->repository->searchForShows();
+    }
+
+    public function testSetThresholdIsntImplemented()
+    {
+        $this->setExpectedException(NotYetImplementedException::class);
+        $this->repository->setThreshold(5);
+    }
+
+    public function testTryFuzzyOnFailIsntImplemented()
+    {
+        $this->setExpectedException(NotYetImplementedException::class);
+        $this->repository->tryFuzzyOnFail();
     }
 }
