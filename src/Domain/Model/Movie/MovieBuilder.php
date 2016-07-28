@@ -31,6 +31,12 @@ class MovieBuilder
             $year
         );
 
+        if (!empty($data['alternate_titles'])) {
+            foreach ($data['alternate_titles'] as $alternateTitle) {
+                $movie->addAlternateTitle($alternateTitle);
+            }
+        }
+
         if (!empty($data['overview'])) {
             $movie->setPlot($data['overview']);
         }

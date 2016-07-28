@@ -4,6 +4,7 @@ namespace Fusani\Movies\Domain\Model\Movie;
 
 interface MovieRepository
 {
+    public function doNotTryFuzzyOnFail();
     public function manyEpisodesOfShow(
         Movie $movie,
         $id,
@@ -21,4 +22,6 @@ interface MovieRepository
     public function oneOfTitle($title, $year = null);
     public function searchForMovies();
     public function searchForShows();
+    public function setThreshold($threshold);
+    public function tryFuzzyOnFail();
 }

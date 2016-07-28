@@ -16,6 +16,7 @@ class MovieTest extends PHPUnit_Framework_TestCase
     {
         $this->expected = [
             'id' => 15,
+            'alternateTitles' => [],
             'cast' => [],
             'directors' => [],
             'episodes' => [],
@@ -27,6 +28,17 @@ class MovieTest extends PHPUnit_Framework_TestCase
             'plot' => null,
         ];
         $this->movie = new Movie(15, 'Guardians of the Galaxy', 'movie', 2014);
+    }
+
+    public function testAddAlternateTitles()
+    {
+        $this->movie->addAlternateTitle('Guardianes de la Galaxia');
+        $interest = $this->movie->provideMovieInterest();
+        $this->assertEquals(['Guardianes de la Galaxia'], $interest['alternateTitles']);
+
+        $this->movie->addAlternateTitle('guardians qIb');
+        $interest = $this->movie->provideMovieInterest();
+        $this->assertEquals(['Guardianes de la Galaxia', 'guardians qIb'], $interest['alternateTitles']);
     }
 
     public function testAddCast()

@@ -16,6 +16,17 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $this->builder = new MovieBuilder();
     }
 
+    public function testBuildWithGuideboxWithAlternateTitles()
+    {
+        $data = array_merge($this->guideBoxMovie(), ['alternate_titles' => ['Guardianes de la Galaxia', 'guardians qIb']]);
+        $movie = $this->builder->buildFromGuidebox($data);
+
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals(['Guardianes de la Galaxia', 'guardians qIb'], $interest['alternateTitles']);
+    }
+
     public function testBuildWithGuideboxIsMovieWithNoTVrageId()
     {
         $data = array_merge($this->guideBoxMovie(), ['tvrage' => ['tvrage_id' => null]]);
@@ -173,6 +184,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $expected = [
             'id' => 15,
+            'alternateTitles' => [],
             'cast' => [],
             'directors' => [],
             'episodes' => [],
@@ -203,6 +215,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $expected = [
             'id' => 15,
+            'alternateTitles' => [],
             'cast' => [],
             'directors' => [],
             'plot' => null,
@@ -234,6 +247,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $expected = [
             'id' => 1234,
+            'alternateTitles' => [],
             'cast' => [],
             'directors' => [],
             'episodes' => [],

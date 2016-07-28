@@ -23,6 +23,26 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository = new MovieRepository($this->adapter);
     }
 
+    public function testDoNotTryFuzzyOnFail()
+    {
+        $this->repository->tryFuzzyOnFail()
+            ->doNotTryFuzzyOnFail();
+
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue(['results' => []]));
+
+        $this->setExpectedException(Movie\NotFoundException::class);
+        $movie = $this->repository->oneOfTitle('Guardians of the Galaxy I', 2018);
+    }
+
+    public function testDoNotTryFuzzyOnFailReturnsSelf()
+    {
+        $repository = $this->repository->doNotTryFuzzyOnFail();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+    }
+
     public function testManyEpisodesOfShowNoMatches()
     {
         $this->adapter->expects($this->once())
@@ -352,6 +372,70 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(16, $movie->identity());
     }
 
+    public function testOneOfTitleWithFuzzyMatchDoesNotPassThreshold()
+    {
+        $this->setExpectedException(Movie\NotFoundException::class);
+
+        $this->repository->tryFuzzyOnFail();
+
+        $movieData = [
+            'results' => [
+                [
+                    'id' => 15,
+                    'title' => 'Guardians of the Galaxy',
+                    'release_year' => 2014,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Guardians of the Galaxy II',
+                    'release_year' => 2018,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->exactly(2))
+            ->method('get')
+            ->will($this->onConsecutiveCalls(['results' => []], $movieData));
+
+        $movie = $this->repository->oneOfTitle('Guardians of the Galaxy I', 2018);
+    }
+
+    public function testOneOfTitleWithFuzzyMatchPassesThresholdSet()
+    {
+        $this->repository->tryFuzzyOnFail()
+            ->setThreshold(2);
+
+        $movieData = [
+            'results' => [
+                [
+                    'id' => 15,
+                    'title' => 'Guardians of the Galaxy',
+                    'release_year' => 2014,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Guardians of the Galaxy II',
+                    'release_year' => 2018,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->exactly(2))
+            ->method('get')
+            ->will($this->onConsecutiveCalls(['results' => []], $movieData));
+
+
+        $movie = $this->repository->oneOfTitle('Guardians of the Galaxy I', 2018);
+        $this->assertInstanceOf(Movie\Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals('Guardians of the Galaxy II', $interest['title']);
+    }
+
     public function testSearchForMovies()
     {
         $repository = $this->repository->searchForMovies();
@@ -423,5 +507,90 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->manyWithTitleLike('ghost');
         $this->repository->oneOfId(15);
         $this->repository->oneOfTitle('ghost');
+    }
+
+    public function testSetThreshold()
+    {
+        $this->repository->tryFuzzyOnFail();
+
+        $movieData = [
+            'results' => [
+                [
+                    'id' => 15,
+                    'title' => 'Guardians of the Galaxy',
+                    'release_year' => 2014,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Guardians of the Galaxy II',
+                    'release_year' => 2018,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->exactly(4))
+            ->method('get')
+            ->will($this->onConsecutiveCalls(['results' => []], $movieData, ['results' => []], $movieData));
+
+        try {
+            $movie = $this->repository->oneOfTitle('Guardians of the Galaxy I', 2018);
+            $this->fail('This should have thrown an exception');
+        } catch (Movie\NotFoundException $e) {
+            $this->repository->setThreshold(2);
+            $movie = $this->repository->oneOfTitle('Guardians of the Galaxy I', 2018);
+            $this->assertInstanceOf(Movie\Movie::class, $movie);
+
+            $interest = $movie->provideMovieInterest();
+            $this->assertEquals('Guardians of the Galaxy II', $interest['title']);
+        }
+    }
+
+    public function testSetThresholdReturnsSelf()
+    {
+        $repository = $this->repository->setThreshold(5);
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+    }
+
+    public function testTryFuzzyOnFail()
+    {
+        $this->repository->tryFuzzyOnFail()
+            ->setThreshold(2);
+
+        $movieData = [
+            'results' => [
+                [
+                    'id' => 15,
+                    'title' => 'Guardians of the Galaxy',
+                    'release_year' => 2014,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+                [
+                    'id' => 16,
+                    'title' => 'Guardians of the Galaxy II',
+                    'release_year' => 2018,
+                    'poster_120x171' => 'www.movieposters.com',
+                ],
+            ],
+        ];
+
+        $this->adapter->expects($this->exactly(2))
+            ->method('get')
+            ->will($this->onConsecutiveCalls(['results' => []], $movieData));
+
+        $movie = $this->repository->oneOfTitle('Guardians of the Galaxy I');
+        $this->assertInstanceOf(Movie\Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals('Guardians of the Galaxy II', $interest['title']);
+    }
+
+    public function testTryFuzzyOnFailReturnsSelf()
+    {
+        $repository = $this->repository->tryFuzzyOnFail();
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
     }
 }

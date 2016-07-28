@@ -9,13 +9,25 @@ class MovieRepository implements Movie\MovieRepository
 {
     protected $adapter;
     protected $movieBuilder;
+    protected $threshold;
+    protected $titleSimilarityScoringService;
+    protected $tryFuzzyOnFail;
     protected $type;
 
     public function __construct(Adapter\Adapter $adapter)
     {
         $this->adapter = $adapter;
         $this->movieBuilder = new Movie\MovieBuilder();
+        $this->threshold = 0;
+        $this->titleSimilarityScoringService = new Movie\TitleSimilarityScoringService();
+        $this->tryFuzzyOnFail = false;
         $this->type = 'movie';
+    }
+
+    public function doNotTryFuzzyOnFail()
+    {
+        $this->tryFuzzyOnFail = false;
+        return $this;
     }
 
     public function manyEpisodesOfShow(
@@ -85,7 +97,20 @@ class MovieRepository implements Movie\MovieRepository
             $params['y'] = $year;
         }
 
-        return $this->oneOf($params);
+        try {
+            return $this->oneOf($params);
+        } catch (Movie\NotFoundException $e) {
+            if ($this->tryFuzzyOnFail) {
+                $movies = $this->manyWithTitleLike($title);
+                $result = $this->titleSimilarityScoringService->findClosestMatch($title, $movies);
+
+                if ($result['score'] <= $this->threshold) {
+                    return $result['movie'];
+                }
+            }
+
+            throw $e;
+        }
     }
 
     private function oneOf(array $params)
@@ -110,6 +135,18 @@ class MovieRepository implements Movie\MovieRepository
     public function searchForShows()
     {
         $this->type = 'series';
+        return $this;
+    }
+
+    public function setThreshold($threshold)
+    {
+        $this->threshold = $threshold;
+        return $this;
+    }
+
+    public function tryFuzzyOnFail()
+    {
+        $this->tryFuzzyOnFail = true;
         return $this;
     }
 }
