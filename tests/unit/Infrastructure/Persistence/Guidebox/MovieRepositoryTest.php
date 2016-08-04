@@ -499,7 +499,7 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
             ->method('get')
             ->with(
                 $this->callback(function ($url) {
-                    return $url == 'search/title/ghost/exact' || strpos($url, 'show') !== false;
+                    return $url == 'search/title/ghost' || strpos($url, 'show') !== false || $url == 'search/title/ghost/exact';
                 }))
             ->will($this->onConsecutiveCalls($movieData, $movieData, $movieData['results'][0], $movieData));
 

@@ -82,7 +82,8 @@ class MovieRepository implements Movie\MovieRepository
     {
         $movies = [];
         $title = $this->encode($title);
-        $result = $this->adapter->get("search/{$this->type}/title/$title", []);
+        $url = $this->type == 'show' ? "search/title/$title" : "search/{$this->type}/title/$title";
+        $result = $this->adapter->get($url, []);
 
         foreach ($result['results'] as $movie) {
             $movies[] = $this->movieBuilder->buildFromGuidebox($movie);
