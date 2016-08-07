@@ -11,6 +11,7 @@ class Movie
     protected $episodes;
     protected $plot;
     protected $poster;
+    protected $rating;
     protected $sources;
     protected $title;
     protected $type;
@@ -111,6 +112,7 @@ class Movie
             'episodes' => $episodes,
             'plot' => $this->plot,
             'poster' => $this->poster,
+            'rating' => $this->rating,
             'sources' => $sources,
             'title' => $this->title,
             'type' => $this->type,
@@ -126,6 +128,11 @@ class Movie
     public function setPoster($poster)
     {
         $this->poster = $poster;
+    }
+
+    public function setRating($rating)
+    {
+        $this->rating = $rating;
     }
 
     public function title()
