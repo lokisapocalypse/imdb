@@ -22,6 +22,7 @@ class MovieTest extends PHPUnit_Framework_TestCase
             'episodes' => [],
             'title' => 'Guardians of the Galaxy',
             'year' => 2014,
+            'rating' => null,
             'type' => 'movie',
             'sources' => [],
             'poster' => null,
@@ -188,6 +189,13 @@ class MovieTest extends PHPUnit_Framework_TestCase
     {
         $this->movie->setPlot('Superheros save the world');
         $expected = array_merge($this->expected, ['plot' => 'Superheros save the world']);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testSetRating()
+    {
+        $this->movie->setRating('PG-13');
+        $expected = array_merge($this->expected, ['rating' => 'PG-13']);
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 

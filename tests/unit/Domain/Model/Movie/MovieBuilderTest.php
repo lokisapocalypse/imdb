@@ -123,6 +123,16 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(['James Gunn', 'Stan Lee'], $interest['directors']);
     }
 
+    public function testBuildWithGuideboxSetRating()
+    {
+        $data = array_merge($this->guideBoxMovie(), ['rating' => 'PG-13']);
+        $movie = $this->builder->buildFromGuidebox($data);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals('PG-13', $interest['rating']);
+    }
+
     public function testBuildWithGuideboxHasFreeSources()
     {
         $data = array_merge($this->guideBoxMovie(), ['free_web_sources' => [['display_name' => 'Netflix', 'link' => 'www.netflix.com']]]);
@@ -188,6 +198,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'cast' => [],
             'directors' => [],
             'episodes' => [],
+            'rating' => null,
             'plot' => 'Superheros save the world',
             'poster' => null,
             'sources' => [],
@@ -220,6 +231,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'directors' => [],
             'plot' => null,
             'episodes' => [],
+            'rating' => null,
             'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
             'title' => 'Guardians of the Galaxy',
             'sources' => [],
@@ -252,6 +264,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'directors' => [],
             'episodes' => [],
             'plot' => 'Superheros save the galaxy',
+            'rating' => null,
             'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
             'title' => 'Guardians of the Galaxy',
             'sources' => [],

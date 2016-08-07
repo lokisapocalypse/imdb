@@ -47,6 +47,10 @@ class MovieBuilder
             $movie->setPoster($data['artwork_208x117']);
         }
 
+        if (!empty($data['rating'])) {
+            $movie->setRating($data['rating']);
+        }
+
         $sources = [];
 
         if (!empty($data['free_web_sources'])) {

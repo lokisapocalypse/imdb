@@ -67,7 +67,14 @@ class MovieRepository implements Movie\MovieRepository
     {
         $movies = [];
         $title = $this->encode($title);
-        $result = $this->adapter->get("search/{$this->type}/title/$title/exact", []);
+
+        if ($this->type == 'movie') {
+            $url = "search/{$this->type}/title/$title/exact";
+        } else {
+            $url = "search/title/$title/exact";
+        }
+
+        $result = $this->adapter->get($url, []);
 
         if (!empty($result['results'])) {
             foreach ($result['results'] as $movie) {
@@ -82,7 +89,13 @@ class MovieRepository implements Movie\MovieRepository
     {
         $movies = [];
         $title = $this->encode($title);
-        $url = $this->type == 'show' ? "search/title/$title" : "search/{$this->type}/title/$title";
+
+        if ($this->type == 'movie') {
+            $url = "search/{$this->type}/title/$title/fuzzy";
+        } else {
+            $url = "search/title/$title/fuzzy";
+        }
+
         $result = $this->adapter->get($url, []);
 
         foreach ($result['results'] as $movie) {
