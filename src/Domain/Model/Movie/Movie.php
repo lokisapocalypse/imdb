@@ -120,6 +120,67 @@ class Movie
         ];
     }
 
+    public function provideMovieWithSourcesConsolidatedInterest()
+    {
+        $sources = [];
+
+        foreach ($this->sources as $sourceList) {
+            foreach ($sourceList as $source) {
+                $sources[] = $source->provideSourceInterest();
+            }
+        }
+
+        /**
+         * @codeCoverageIgnore
+         */
+        usort($sources, function ($a, $b) {
+            if ($a['type'] == $b['type']) {
+                return strcasecmp($a['name'], $b['name']);
+            }
+
+            if ($a['type'] == 'free') {
+                return -1;
+            } else if ($b['type'] == 'free') {
+                return 1;
+            }
+
+            if ($a['type'] == 'tvEverywhere') {
+                return -1;
+            } else if ($b['type'] == 'tvEverywhere') {
+                return 1;
+            }
+
+            if ($a['type'] == 'subscription') {
+                return -1;
+            } else if ($b['type'] == 'subscription') {
+                return 1;
+            }
+
+            return 0;
+        });
+
+        $episodes = [];
+
+        foreach ($this->episodes as $episode) {
+            $episodes[] = $episode->provideEpisodeInterest();
+        }
+
+        return [
+            'id' => $this->id,
+            'alternateTitles' => $this->alternateTitles,
+            'cast' => $this->cast,
+            'directors' => $this->directors,
+            'episodes' => $episodes,
+            'plot' => $this->plot,
+            'poster' => $this->poster,
+            'rating' => $this->rating,
+            'sources' => $sources,
+            'title' => $this->title,
+            'type' => $this->type,
+            'year' => $this->year,
+        ];
+    }
+
     public function setPlot($plot)
     {
         $this->plot = $plot;
