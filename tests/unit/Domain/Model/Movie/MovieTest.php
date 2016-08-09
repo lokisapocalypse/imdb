@@ -178,6 +178,106 @@ class MovieTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 
+    public function testProvideMovieWithSourcesConsolidatedInterest()
+    {
+        $this->movie->addSource('subscription', 'Netflix', 'www.netflix.com');
+        $this->movie->addSource('free', 'Netflix', 'www.netflix.com');
+        $this->movie->addSource('subscription', 'Amazon', 'www.amazon.com');
+        $this->movie->addSource('tvEverywhere', 'Amazon', 'www.amazon.com');
+        $this->movie->addSource('tvEverywhere', 'Netflix', 'www.netflix.com');
+        $this->movie->addSource('purchase', 'Amazon', 'www.amazon.com');
+        $this->movie->addSource('purchase', 'Netflix', 'www.netflix.com');
+        $this->movie->addSource('purchase', 'Netfli', 'www.netflix.com');
+        $this->movie->addSource('purchase', 'Netfl', 'www.netflix.com');
+        $this->movie->addSource('purchase', 'Netf', 'www.netflix.com');
+        $this->movie->addSource('purchase', 'Net', 'www.netflix.com');
+        $this->movie->addSource('subscription', 'VUDU', 'www.vudu.com');
+
+        $episode = new Episode(15, 'Guardians of Galaxy', '2014-05-28', 1, 1);
+
+        $this->movie->addEpisode($episode);
+
+        $expected = array_merge($this->expected, [
+            'episodes' => [$episode->provideEpisodeInterest()],
+            'sources' => [
+                [
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Netflix',
+                    'type' => 'free',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.amazon.com',
+                    'name' => 'Amazon',
+                    'type' => 'tvEverywhere',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Netflix',
+                    'type' => 'tvEverywhere',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.amazon.com',
+                    'name' => 'Amazon',
+                    'type' => 'subscription',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Netflix',
+                    'type' => 'subscription',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.vudu.com',
+                    'name' => 'VUDU',
+                    'type' => 'subscription',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.amazon.com',
+                    'name' => 'Amazon',
+                    'type' => 'purchase',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Net',
+                    'type' => 'purchase',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Netf',
+                    'type' => 'purchase',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Netfl',
+                    'type' => 'purchase',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Netfli',
+                    'type' => 'purchase',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Netflix',
+                    'type' => 'purchase',
+                ],
+            ],
+        ]);
+
+        $this->assertEquals($expected, $this->movie->provideMovieWithSourcesConsolidatedInterest());
+    }
+
     public function testSetPoster()
     {
         $this->movie->setPoster('www.movieposters.com/guardians-of-the-galaxy');
