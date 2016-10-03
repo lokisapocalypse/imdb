@@ -30,6 +30,11 @@ class MovieRepository implements Movie\MovieRepository
         return $this;
     }
 
+    public function many($startAt, $numRecords, $type)
+    {
+        throw new NotYetImplementedException();
+    }
+
     public function manyEpisodesOfShow(
         Movie\Movie $movie,
         $id,

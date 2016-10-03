@@ -38,6 +38,19 @@ class MovieRepository implements Movie\MovieRepository
         return urlencode(urlencode(urlencode($str)));
     }
 
+    public function many($startAt, $numRecords, $type)
+    {
+        $movies = [];
+        $url = "$type/all/$startAt/$numRecords/all/all";
+        $result = $this->adapter->get($url, []);
+
+        foreach ($result['results'] as $data) {
+            $movies[] = $this->movieBuilder->buildFromGuidebox($data);
+        }
+
+        return $movies;
+    }
+
     public function manyEpisodesOfShow(
         Movie\Movie $movie,
         $id,
