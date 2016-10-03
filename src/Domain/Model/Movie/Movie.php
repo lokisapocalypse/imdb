@@ -140,19 +140,19 @@ class Movie
 
             if ($a['type'] == 'free') {
                 return -1;
-            } else if ($b['type'] == 'free') {
+            } elseif ($b['type'] == 'free') {
                 return 1;
             }
 
             if ($a['type'] == 'tvEverywhere') {
                 return -1;
-            } else if ($b['type'] == 'tvEverywhere') {
+            } elseif ($b['type'] == 'tvEverywhere') {
                 return 1;
             }
 
             if ($a['type'] == 'subscription') {
                 return -1;
-            } else if ($b['type'] == 'subscription') {
+            } elseif ($b['type'] == 'subscription') {
                 return 1;
             }
 

@@ -28,6 +28,12 @@ class MovieRepository implements Movie\MovieRepository
         throw new NotYetImplementedException();
     }
 
+    public function many($startAt, $numRecords, $type)
+    {
+        // this api does not support grabbing all records
+        throw new NotYetImplementedException();
+    }
+
     public function manyEpisodesOfShow(
         Movie\Movie $movie,
         $id,

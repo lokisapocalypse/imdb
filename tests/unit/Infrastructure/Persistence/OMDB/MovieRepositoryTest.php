@@ -49,6 +49,12 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->manyEpisodesOfShow(new Movie\Movie(15, 'Guardians of the Galaxy', 'movie', 2014), 15);
     }
 
+    public function testManyIsntImplemented()
+    {
+        $this->setExpectedException(NotYetImplementedException::class);
+        $this->repository->many(0, 250, 'movie');
+    }
+
     public function testManyWithTitleNoMatches()
     {
         $this->adapter->expects($this->once())

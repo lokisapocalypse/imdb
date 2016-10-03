@@ -29,6 +29,12 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->doNotTryFuzzyOnFail();
     }
 
+    public function testManyIsntImplemented()
+    {
+        $this->setExpectedException(NotYetImplementedException::class);
+        $this->repository->many(0, 250, 'movie');
+    }
+
     public function testManyEpisodesOfShowIsntImplemented()
     {
         $this->setExpectedException(NotYetImplementedException::class);
