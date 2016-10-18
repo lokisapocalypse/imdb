@@ -65,7 +65,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testBuildWithGuideboxFirstAiredSet()
     {
-        $data = array_merge($this->guideBoxMovie(), ['first_aired' => '2014-05-26', 'release_year' => null]);
+        $data = array_merge($this->guideBoxMovie(), ['first_aired' => '2014-05-26', 'release_year' => null, 'release_date' => '2015-05-26']);
 
         $movie = $this->builder->buildFromGuidebox($data);
 
@@ -73,6 +73,30 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $interest = $movie->provideMovieInterest();
         $this->assertEquals(2014, $interest['year']);
+    }
+
+    public function testBuildWithGuideboxUsesReleaseYearFirst()
+    {
+        $data = array_merge($this->guideBoxMovie(), ['first_aired' => '2014-05-26', 'release_year' => 2013, 'release_date' => '2015-05-26']);
+
+        $movie = $this->builder->buildFromGuidebox($data);
+
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals(2013, $interest['year']);
+    }
+
+    public function testBuildWithGuideboxUsesReleaseDateIfNothingElseIsAvailable()
+    {
+        $data = array_merge($this->guideBoxMovie(), ['first_aired' => null, 'release_year' => null, 'release_date' => '2015-05-26']);
+
+        $movie = $this->builder->buildFromGuidebox($data);
+
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+        $this->assertEquals(2015, $interest['year']);
     }
 
     public function testBuildWithGuideboxWithArtwork()

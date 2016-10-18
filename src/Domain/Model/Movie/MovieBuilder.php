@@ -22,6 +22,9 @@ class MovieBuilder
         } elseif (!empty($data['first_aired'])) {
             $year = new \DateTime($data['first_aired']);
             $year = $year->format('Y');
+        } elseif (!empty($data['release_date'])) {
+            $year = new \DateTime($data['release_date']);
+            $year = $year->format('Y');
         }
 
         $movie = new Movie(
