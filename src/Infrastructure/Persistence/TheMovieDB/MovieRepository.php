@@ -96,7 +96,7 @@ class MovieRepository implements Movie\MovieRepository
 
         if ($type == 'movie') {
             $this->searchForMovies();
-        } else if ($type == 'tv') {
+        } elseif ($type == 'tv') {
             $this->searchForShows();
         }
 
