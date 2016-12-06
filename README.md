@@ -23,6 +23,8 @@ If you do this approach, you need to consider two things.
 
 Any method beginning with oneOf* will either return a Movie object or throw a NotFoundException. Methods beginning with manyWith* will return an array of Movie objects or an empty array in the event that no movies were found for the provided search. There are a few need to knows for each of the search methods.
 
+### manyEpisodesOf ###
+
 ### manyWithTitleLike ###
 
 This method will return any movie matching the title provided. The api implementation will only return the first 10 results and does not support returning more rows. It does support pagination but that is not implemented at this time.
