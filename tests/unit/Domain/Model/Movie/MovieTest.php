@@ -17,16 +17,33 @@ class MovieTest extends PHPUnit_Framework_TestCase
         $this->expected = [
             'id' => 15,
             'alternateTitles' => [],
+            'budget' => null,
             'cast' => [],
+            'collection' => null,
+            'crew' => [],
             'directors' => [],
             'episodes' => [],
-            'title' => 'Guardians of the Galaxy',
-            'year' => 2014,
-            'rating' => null,
-            'type' => 'movie',
-            'sources' => [],
-            'poster' => null,
+            'externalIds' => [],
+            'genres' => [],
+            'homepage' => null,
+            'keywords' => [],
+            'languages' => [],
             'plot' => null,
+            'poster' => null,
+            'productionCompanies' => [],
+            'productionCountries' => [],
+            'rating' => null,
+            'recommendations' => [],
+            'revenue' => null,
+            'reviews' => [],
+            'runtime' => null,
+            'similarMovies' => [],
+            'sources' => [],
+            'status' => null,
+            'tagline' => null,
+            'title' => 'Guardians of the Galaxy',
+            'type' => 'movie',
+            'year' => 2014,
         ];
         $this->movie = new Movie(15, 'Guardians of the Galaxy', 'movie', 2014);
     }
@@ -44,23 +61,159 @@ class MovieTest extends PHPUnit_Framework_TestCase
 
     public function testAddCast()
     {
-        $this->movie->addCast('Bill Murray');
-        $expected = array_merge($this->expected, ['cast' => ['Bill Murray']]);
+        $venkman = new Cast('Bill Murray', 'Peter Venkman');
+        $movie = $this->movie->addCast($venkman);
+        $expected = array_merge($this->expected, ['cast' => [['actor' => 'Bill Murray', 'character' => 'Peter Venkman']]]);
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
 
-        $this->movie->addCast('Dan Akroyd');
-        $expected = array_merge($this->expected, ['cast' => ['Bill Murray', 'Dan Akroyd']]);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $stantz = new Cast('Dan Akroyd', 'Raymond Stantz');
+
+        $movie = $this->movie->addCast($stantz);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'cast' => [
+                    ['actor' => 'Bill Murray', 'character' => 'Peter Venkman'],
+                    ['actor' => 'Dan Akroyd', 'character' => 'Raymond Stantz']
+                ]
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['cast'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['cast']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddCastDoesNotAddDuplicateCast()
+    {
+        $venkman = new Cast('Bill Murray', 'Peter Venkman');
+
+        $movie = $this->movie->addCast($venkman);
+        $expected = array_merge($this->expected, ['cast' => [['actor' => 'Bill Murray', 'character' => 'Peter Venkman']]]);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $venkman = new Cast('Bill Murray', 'Peter Venkman');
+
+        $movie = $this->movie->addCast($venkman);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'cast' => [
+                    ['actor' => 'Bill Murray', 'character' => 'Peter Venkman'],
+                ]
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['cast'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['cast']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddCrew()
+    {
+        $director = new Crew('Ivan Reitman', 'Director', 'directors');
+        $writer = new Crew('Harold Ramis', 'Writer', 'writers');
+
+        $movie = $this->movie->addCrew($director);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addCrew($writer);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'crew' => [
+                    ['name' => 'Ivan Reitman', 'job' => 'Director', 'department' => 'directors'],
+                    ['name' => 'Harold Ramis', 'job' => 'Writer', 'department' => 'writers'],
+                ],
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['crew'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['crew']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddCrewDoesntAddDuplicateCrew()
+    {
+        $director = new Crew('Ivan Reitman', 'Director', 'directors');
+
+        $movie = $this->movie->addCrew($director);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addCrew($director);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'crew' => [
+                    ['name' => 'Ivan Reitman', 'job' => 'Director', 'department' => 'directors'],
+                ],
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['crew'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['crew']
+        );
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 
     public function testAddDirector()
     {
-        $this->movie->addDirector('Ivan Reitman');
+        $movie = $this->movie->addDirector('Ivan Reitman');
         $expected = array_merge($this->expected, ['directors' => ['Ivan Reitman']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
 
-        $this->movie->addDirector('Harold Ramis');
+        $movie = $this->movie->addDirector('Harold Ramis');
         $expected = array_merge($this->expected, ['directors' => ['Ivan Reitman', 'Harold Ramis']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddDirectorDoesntAddDuplicateDirectors()
+    {
+        $movie = $this->movie->addDirector('Ivan Reitman');
+        $expected = array_merge($this->expected, ['directors' => ['Ivan Reitman']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addDirector('Ivan Reitman');
+        $expected = array_merge($this->expected, ['directors' => ['Ivan Reitman']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 
@@ -68,10 +221,474 @@ class MovieTest extends PHPUnit_Framework_TestCase
     {
         $episode = new Episode(15, 'Guardians of Galaxy', '2014-05-28', 1, 1);
 
-        $this->movie->addEpisode($episode);
+        $movie = $this->movie->addEpisode($episode);
 
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
         $interest = $this->movie->provideMovieInterest();
         $this->assertEquals($interest, array_merge($this->expected, ['episodes' => [$episode->provideEpisodeInterest()]]));
+
+        $episodeTwo = new Episode(16, 'Guardians of the Galaxy', '2017-05-28', 1, 2);
+
+        $movie = $this->movie->addEpisode($episodeTwo);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $interest = $this->movie->provideMovieInterest();
+
+        $this->assertEquals(
+            $interest,
+            array_merge(
+                $this->expected,
+                ['episodes' => [$episode->provideEpisodeInterest(), $episodeTwo->provideEpisodeInterest()]]
+            )
+        );
+    }
+
+    public function testAddEpisodeDoNotAddDuplicateEpisode()
+    {
+        $episode = new Episode(15, 'Guardians of Galaxy', '2014-05-28', 1, 1);
+
+        $movie = $this->movie->addEpisode($episode);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $interest = $this->movie->provideMovieInterest();
+        $this->assertEquals($interest, array_merge($this->expected, ['episodes' => [$episode->provideEpisodeInterest()]]));
+
+        $episodeTwo = new Episode(16, 'Guardians of the Galaxy', '2017-05-28', 1, 1);
+
+        $movie = $this->movie->addEpisode($episode);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $interest = $this->movie->provideMovieInterest();
+
+        $this->assertEquals(
+            $interest,
+            array_merge(
+                $this->expected,
+                ['episodes' => [$episode->provideEpisodeInterest()]]
+            )
+        );
+    }
+
+    public function testAddExternalId()
+    {
+        $imdb = new ExternalId('imdb15124', 'imdb');
+        $theMovieDb = new ExternalId('ttmb194810', 'theMovieDB');
+
+        $movie = $this->movie->addExternalId($imdb);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addExternalId($theMovieDb);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'externalIds' => [
+                    ['externalId' => 'imdb15124', 'source' => 'imdb'],
+                    ['externalId' => 'ttmb194810', 'source' => 'theMovieDB'],
+                ],
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['externalIds'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['externalIds']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddExternalIdDoesntAddDuplicateExternalId()
+    {
+        $imdb = new ExternalId('imdb15124', 'imdb');
+
+        $movie = $this->movie->addExternalId($imdb);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addExternalId($imdb);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'externalIds' => [
+                    ['externalId' => 'imdb15124', 'source' => 'imdb'],
+                ],
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['externalIds'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['externalIds']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddGenre()
+    {
+        $movie = $this->movie->addGenre('comedy');
+        $expected = array_merge($this->expected, ['genres' => ['comedy']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addGenre('supernatural');
+        $expected = array_merge($this->expected, ['genres' => ['comedy', 'supernatural']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddGenreDoesntAddDuplicateGenres()
+    {
+        $movie = $this->movie->addGenre('comedy');
+        $expected = array_merge($this->expected, ['genres' => ['comedy']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addGenre('comedy');
+        $expected = array_merge($this->expected, ['genres' => ['comedy']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddKeyword()
+    {
+        $movie = $this->movie->addKeyword('ghost');
+        $expected = array_merge($this->expected, ['keywords' => ['ghost']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addKeyword('supernatural');
+        $expected = array_merge($this->expected, ['keywords' => ['ghost', 'supernatural']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddKeywordDoesntAddDuplicateKeywords()
+    {
+        $movie = $this->movie->addKeyword('ghost');
+        $expected = array_merge($this->expected, ['keywords' => ['ghost']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addKeyword('ghost');
+        $expected = array_merge($this->expected, ['keywords' => ['ghost']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddLanguage()
+    {
+        $movie = $this->movie->addLanguage('english');
+        $expected = array_merge($this->expected, ['languages' => ['english']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addLanguage('klingon');
+        $expected = array_merge($this->expected, ['languages' => ['english', 'klingon']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddLanguageDoesntAddDuplicateLanguages()
+    {
+        $movie = $this->movie->addLanguage('english');
+        $expected = array_merge($this->expected, ['languages' => ['english']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addLanguage('english');
+        $expected = array_merge($this->expected, ['languages' => ['english']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddProductionCompany()
+    {
+        $movie = $this->movie->addProductionCompany('Universal');
+        $expected = array_merge($this->expected, ['productionCompanies' => ['Universal']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addProductionCompany('Fox');
+        $expected = array_merge($this->expected, ['productionCompanies' => ['Universal', 'Fox']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddProductionCompanyDoesntAddDuplicateProductionCompanys()
+    {
+        $movie = $this->movie->addProductionCompany('Universal');
+        $expected = array_merge($this->expected, ['productionCompanies' => ['Universal']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addProductionCompany('Universal');
+        $expected = array_merge($this->expected, ['productionCompanies' => ['Universal']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddProductionCountry()
+    {
+        $movie = $this->movie->addProductionCountry('USA');
+        $expected = array_merge($this->expected, ['productionCountries' => ['USA']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addProductionCountry('Mordor');
+        $expected = array_merge($this->expected, ['productionCountries' => ['USA', 'Mordor']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddProductionCountryDoesntAddDuplicateProductionCountrys()
+    {
+        $movie = $this->movie->addProductionCountry('USA');
+        $expected = array_merge($this->expected, ['productionCountries' => ['USA']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+
+        $movie = $this->movie->addProductionCountry('USA');
+        $expected = array_merge($this->expected, ['productionCountries' => ['USA']]);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddRecommendation()
+    {
+        $ghostbustersTwo = new Movie(15, 'Ghostbusters 2', 'movie', 1989);
+        $newGhostbusters = new Movie(16, 'Ghostbusters', 'movie', 2016);
+
+        $movie = $this->movie->addRecommendation($ghostbustersTwo);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addRecommendation($newGhostbusters);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'recommendations' => [
+                    $ghostbustersTwo->provideMovieInterest(),
+                    $newGhostbusters->provideMovieInterest(),
+                ],
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['recommendations'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['recommendations']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddRecommendationDoesntAddDuplicateRecommendation()
+    {
+        $ghostbustersTwo = new Movie(15, 'Ghostbusters 2', 'movie', 1989);
+
+        $movie = $this->movie->addRecommendation($ghostbustersTwo);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addRecommendation($ghostbustersTwo);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'recommendations' => [
+                    $ghostbustersTwo->provideMovieInterest(),
+                ],
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['recommendations'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['recommendations']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddReview()
+    {
+        $reviewOne = new Review('Me', 'It rules', 'www.truth.org');
+        $reviewTwo = new Review('Idiot', 'It sucks', 'www.moron.com');
+
+        $movie = $this->movie->addReview($reviewOne);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addReview($reviewTwo);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'reviews' => [
+                    $reviewOne->provideReviewInterest(),
+                    $reviewTwo->provideReviewInterest(),
+                ],
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['reviews'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['reviews']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddReviewDoesntAddDuplicateReview()
+    {
+        $reviewOne = new Review('Ivan Reitman', 'reviewOne', 'reviewOnes');
+
+        $movie = $this->movie->addReview($reviewOne);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addReview($reviewOne);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'reviews' => [
+                    $reviewOne->provideReviewInterest(),
+                ],
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['reviews'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['reviews']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddSimilarMovie()
+    {
+        $ghostbustersTwo = new Movie(15, 'Ghostbusters 2', 'movie', 1989);
+        $newGhostbusters = new Movie(16, 'Ghostbusters', 'movie', 2016);
+
+        $movie = $this->movie->addSimilarMovie($ghostbustersTwo);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addSimilarMovie($newGhostbusters);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'similarMovies' => [
+                    $ghostbustersTwo->provideMovieInterest(),
+                    $newGhostbusters->provideMovieInterest(),
+                ],
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['similarMovies'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['similarMovies']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddSimilarMovieDoesntAddDuplicateSimilarMovie()
+    {
+        $ghostbustersTwo = new Movie(15, 'Ghostbusters 2', 'movie', 1989);
+
+        $movie = $this->movie->addSimilarMovie($ghostbustersTwo);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addSimilarMovie($ghostbustersTwo);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = array_merge(
+            $this->expected,
+            [
+                'similarMovies' => [
+                    $ghostbustersTwo->provideMovieInterest(),
+                ],
+            ]
+        );
+
+        $this->assertEquals(
+            $expected['similarMovies'],
+            $this->movie->provideMovieWithSourcesConsolidatedInterest()['similarMovies']
+        );
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 
     public function testAddSource()
@@ -278,6 +895,24 @@ class MovieTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->movie->provideMovieWithSourcesConsolidatedInterest());
     }
 
+    public function testSetBudget()
+    {
+        $this->movie->setBudget(40000000);
+        $this->assertEquals(40000000, $this->movie->provideMovieInterest()['budget']);
+    }
+
+    public function testSetCollection()
+    {
+        $this->movie->setCollection('Marvel Studios');
+        $this->assertEquals('Marvel Studios', $this->movie->provideMovieInterest()['collection']);
+    }
+
+    public function testSetHomepage()
+    {
+        $this->movie->setHomepage('www.gotg.com');
+        $this->assertEquals('www.gotg.com', $this->movie->provideMovieInterest()['homepage']);
+    }
+
     public function testSetPoster()
     {
         $this->movie->setPoster('www.movieposters.com/guardians-of-the-galaxy');
@@ -296,6 +931,33 @@ class MovieTest extends PHPUnit_Framework_TestCase
     {
         $this->movie->setRating('PG-13');
         $expected = array_merge($this->expected, ['rating' => 'PG-13']);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testSetRevenue()
+    {
+        $this->movie->setRevenue(229242989);
+        $expected = array_merge($this->expected, ['revenue' => 229242989]);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testSetRuntime()
+    {
+        $this->movie->setRuntime(115);
+        $expected = array_merge($this->expected, ['runtime' => 115]);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testSetStatus()
+    {
+        $this->movie->setStatus('Released');
+        $this->assertEquals('Released', $this->movie->provideMovieInterest()['status']);
+    }
+
+    public function testSetTagline()
+    {
+        $this->movie->setTagline('I aint afraid of no ghosts');
+        $expected = array_merge($this->expected, ['tagline' => 'I aint afraid of no ghosts']);
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 

@@ -2,8 +2,74 @@
 
 namespace Fusani\Movies\Domain\Model\Movie;
 
+use DateTime;
+
 class MovieBuilder
 {
+    public function addAlternateTitlesFromTheMovieDB(Movie $movie, array $data)
+    {
+        foreach ($data as $title) {
+            $movie->addAlternateTitle($title['title']);
+        }
+
+        return $movie;
+    }
+
+    public function addCastFromTheMovieDB(Movie $movie, array $data)
+    {
+        if (!empty($data['cast'])) {
+            foreach ($data['cast'] as $details) {
+                $cast = new Cast($details['name'], $details['character']);
+                $movie->addCast($cast);
+            }
+        }
+
+        if (!empty($data['crew'])) {
+            foreach ($data['crew'] as $details) {
+                $crew = new Crew($details['name'], $details['job'], $details['department']);
+                $movie->addCrew($crew);
+            }
+        }
+
+        return $movie;
+    }
+
+    public function addKeywordsFromTheMovieDB(Movie $movie, array $keywords)
+    {
+        foreach ($keywords as $keyword) {
+            $movie->addKeyword($keyword['name']);
+        }
+
+        return $movie;
+    }
+
+    public function addRecommendationsFromTheMovieDB(Movie $movie, array $recommendations)
+    {
+        foreach ($recommendations as $recommendation) {
+            $movie->addRecommendation($this->buildFromTheMovieDB($recommendation, 'movie'));
+        }
+
+        return $movie;
+    }
+
+    public function addReviewsFromTheMovieDB(Movie $movie, array $reviews)
+    {
+        foreach ($reviews as $review) {
+            $movie->addReview(new Review($review['content'], $review['author'], $review['url']));
+        }
+
+        return $movie;
+    }
+
+    public function addSimilarMoviesFromTheMovieDB(Movie $movie, array $similarMovies)
+    {
+        foreach ($similarMovies as $similarMovie) {
+            $movie->addSimilarMovie($this->buildFromTheMovieDB($similarMovie, 'movie'));
+        }
+
+        return $movie;
+    }
+
     public function buildFromGuidebox(array $data)
     {
         $movie = false;
@@ -85,7 +151,7 @@ class MovieBuilder
 
         if (!empty($data['cast'])) {
             foreach ($data['cast'] as $cast) {
-                $movie->addCast($cast['name']);
+                $movie->addCast(new Cast($cast['name'], $cast['character_name']));
             }
         }
 
@@ -121,6 +187,78 @@ class MovieBuilder
 
         if (!empty($data['Plot'])) {
             $movie->setPlot($data['Plot']);
+        }
+
+        return $movie;
+    }
+
+    public function buildFromTheMovieDB(array $data, $type)
+    {
+        $releaseDate = new DateTime(empty($data['release_date']) ? $data['first_air_date'] : $data['release_date']);
+
+        $movie = new Movie(
+            $data['id'],
+            empty($data['title']) ? $data['original_name'] : $data['title'],
+            $type,
+            $releaseDate->format('Y')
+        );
+
+        if (!empty($data['original_title'])) {
+            $movie->addAlternateTitle($data['original_title']);
+        }
+
+        if (!empty($data['name']) && !empty($data['original_name']) && $data['original_name'] != $data['name']) {
+            $movie->addAlternateTitle($data['name']);
+        }
+
+        $movie->setPlot($data['overview']);
+
+        if (!empty($data['belongs_to_collection'])) {
+            $movie->setCollection($data['belongs_to_collection']['name']);
+        }
+
+        if (!empty($data['budget'])) {
+            $movie->setBudget($data['budget']);
+        }
+
+        if (!empty($data['genres']) && is_array($data['genres'])) {
+            foreach ($data['genres'] as $genre) {
+                $movie->addGenre($genre['name']);
+            }
+        }
+
+        if (!empty($data['homepage'])) {
+            $movie->setHomepage($data['homepage']);
+        }
+
+        if (!empty($data['imdb_id'])) {
+            $movie->addExternalId(new ExternalId($data['imdb_id'], 'imdb'));
+        }
+
+        if (!empty($data['original_language'])) {
+            $movie->addLanguage($data['original_language']);
+        }
+
+        if (!empty($data['production_companies'])) {
+            foreach ($data['production_companies'] as $productionCompany) {
+                $movie->addProductionCompany($productionCompany['name']);
+            }
+        }
+
+        if (!empty($data['revenue'])) {
+            $movie->setRevenue($data['revenue']);
+        }
+
+        if (!empty($data['runtime'])) {
+            $movie->setRuntime($data['runtime']);
+        }
+
+        if (!empty($data['status'])) {
+            $movie->setStatus($data['status']);
+        }
+
+        if (!empty($data['tagline'])) {
+            $movie->setTagline($data['tagline']);
         }
 
         return $movie;

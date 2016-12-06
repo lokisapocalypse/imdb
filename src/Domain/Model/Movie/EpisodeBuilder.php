@@ -49,4 +49,31 @@ class EpisodeBuilder
 
         return $episode;
     }
+
+    public function buildFromTheMovieDB(array $data)
+    {
+        $episode = new Episode(
+            $data['id'],
+            $data['name'],
+            $data['air_date'],
+            $data['season_number'],
+            $data['episode_number']
+        );
+
+        if (!empty($data['crew'])) {
+            foreach ($data['crew'] as $crew) {
+                $episode->addCrew(new Crew($crew['name'], $crew['job'], $crew['department']));
+            }
+        }
+
+        if (!empty($data['guest_stars'])) {
+            foreach ($data['guest_stars'] as $guestStar) {
+                $episode->addCast(new Cast($guestStar['name'], $guestStar['character']));
+            }
+        }
+
+        $episode->setPlot($data['overview']);
+
+        return $episode;
+    }
 }
