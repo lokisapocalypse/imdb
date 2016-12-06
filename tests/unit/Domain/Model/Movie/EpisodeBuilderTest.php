@@ -77,13 +77,65 @@ class EpisodeBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertNotEmpty($interest['sources']['purchase']);
     }
 
+    public function testBuildFromTheMovieDBBasicInformation()
+    {
+        $episode = $this->builder->buildFromTheMovieDB($this->theMovieDBEpisode());
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $expected = array_merge($this->expected(), ['poster' => null, 'firstAired' => '2014-05-28']);
+
+        $this->assertEquals($expected, $episode->provideEpisodeInterest());
+    }
+
+    public function testBuildFromTheMovieDBWithCrew()
+    {
+        $data = $this->theMovieDBEpisode();
+        $data['crew'] = [
+            ['name' => 'Harold Ramis', 'job' => 'Writer', 'department' => 'writing staff'],
+            ['name' => 'Ivan Reitman', 'job' => 'Director', 'department' => 'director'],
+        ];
+
+        $episode = $this->builder->buildFromTheMovieDB($data);
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $episode->provideEpisodeInterest();
+
+        $this->assertNotEquals([], $interest['crew']);
+        $this->assertNotEmpty($interest['crew']);
+    }
+
+    public function testBuildFromTheMovieDBWithCast()
+    {
+        $data = $this->theMovieDBEpisode();
+        $data['guest_stars'] = [
+            ['name' => 'Slavitza Jovan', 'character' => 'Gozer'],
+            ['name' => 'David Margulies', 'character' => 'Mayor'],
+        ];
+
+        $episode = $this->builder->buildFromTheMovieDB($data);
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $episode->provideEpisodeInterest();
+
+        $this->assertNotEquals([], $interest['cast']);
+        $this->assertNotEmpty($interest['cast']);
+    }
+
     protected function expected()
     {
         return [
+            'cast' => [],
+            'crew' => [],
             'id' => 15,
             'episode' => 1,
             'firstAired' => new DateTime('2014-05-28'),
-            'plot' => 'Superheros save the day',
+            'plot' => 'Superheroes save the day',
             'poster' => 'www.movieposters.com',
             'season' => 1,
             'sources' => [],
@@ -100,7 +152,19 @@ class EpisodeBuilderTest extends PHPUnit_Framework_TestCase
             'episode_number' => 1,
             'first_aired' => '2014-05-28',
             'thumbnail_208x117' => 'www.movieposters.com',
-            'overview' => 'Superheros save the day',
+            'overview' => 'Superheroes save the day',
+        ];
+    }
+
+    protected function theMovieDBEpisode()
+    {
+        return [
+            'id' => 15,
+            'name' => 'Guardians of the Galaxy',
+            'air_date' => '2014-05-28',
+            'season_number' => 1,
+            'episode_number' => 1,
+            'overview' => 'Superheroes save the day',
         ];
     }
 }

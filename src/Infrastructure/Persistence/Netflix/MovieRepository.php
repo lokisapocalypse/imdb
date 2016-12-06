@@ -105,4 +105,39 @@ class MovieRepository implements Movie\MovieRepository
         // this api does not support fuzzy matching
         throw new NotYetImplementedException();
     }
+
+    public function withAlternateTitles()
+    {
+        return $this;
+    }
+
+    public function withAllData()
+    {
+        return $this;
+    }
+
+    public function withCast()
+    {
+        return $this;
+    }
+
+    public function withKeywords()
+    {
+        return $this;
+    }
+
+    public function withRecommendations()
+    {
+        return $this;
+    }
+
+    public function withReviews()
+    {
+        return $this;
+    }
+
+    public function withSimilarMovies()
+    {
+        return $this;
+    }
 }

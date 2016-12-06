@@ -16,6 +16,202 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $this->builder = new MovieBuilder();
     }
 
+    public function testAddAlternateTitlesFromTheMovieDBNoAlternateTitles()
+    {
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addAlternateTitlesFromTheMovieDB($movie, []);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $this->assertEquals([], $movie->provideMovieInterest()['alternateTitles']);
+    }
+
+    public function testAddAlternateTitlesFromTheMovieDB()
+    {
+        $data = [
+            ['title' => 'Le Ghostbusters'],
+            ['title' => 'The Ghostbusters'],
+        ];
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addAlternateTitlesFromTheMovieDB($movie, $data);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = ['Le Ghostbusters', 'The Ghostbusters'];
+        $this->assertEquals($expected, $movie->provideMovieInterest()['alternateTitles']);
+    }
+
+    public function testAddCastFromTheMovieDBNoCast()
+    {
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addCastFromTheMovieDB($movie, []);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $this->assertEquals([], $movie->provideMovieInterest()['cast']);
+        $this->assertEquals([], $movie->provideMovieInterest()['crew']);
+    }
+
+    public function testAddCastFromTheMovieDB()
+    {
+        $data = [
+            'cast' => [
+                ['name' => 'Bill Murray', 'character' => 'Peter Venkman'],
+                ['name' => 'Harold Ramis', 'character' => 'Egon Spangler'],
+            ],
+            'crew' => [
+                ['name' => 'Ivan Reitman', 'job' => 'Director', 'department' => 'directors'],
+                ['name' => 'Harold Ramis', 'job' => 'Writer', 'department' => 'writers'],
+            ],
+        ];
+
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addCastFromTheMovieDB($movie, $data);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = [
+            'cast' => [
+                ['actor' => 'Bill Murray', 'character' => 'Peter Venkman'],
+                ['actor' => 'Harold Ramis', 'character' => 'Egon Spangler'],
+            ],
+            'crew' => [
+                ['name' => 'Ivan Reitman', 'job' => 'Director', 'department' => 'directors'],
+                ['name' => 'Harold Ramis', 'job' => 'Writer', 'department' => 'writers'],
+            ],
+        ];
+
+        $this->assertEquals($expected['cast'], $movie->provideMovieInterest()['cast']);
+        $this->assertEquals($expected['crew'], $movie->provideMovieInterest()['crew']);
+    }
+
+    public function testAddKeywordsFromTheMovieDBNoKeywords()
+    {
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addKeywordsFromTheMovieDB($movie, []);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $this->assertEquals([], $movie->provideMovieInterest()['keywords']);
+    }
+
+    public function testAddKeywordsFromTheMovieDB()
+    {
+        $data = [
+            ['name' => 'ghost'],
+            ['name' => 'busting'],
+        ];
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addKeywordsFromTheMovieDB($movie, $data);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = ['ghost', 'busting'];
+        $this->assertEquals($expected, $movie->provideMovieInterest()['keywords']);
+    }
+
+    public function testAddRecommendationsFromTheMovieDBNoRecommendations()
+    {
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addRecommendationsFromTheMovieDB($movie, []);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $this->assertEquals([], $movie->provideMovieInterest()['recommendations']);
+    }
+
+    public function testAddRecommendationsFromTheMovieDB()
+    {
+        $data = [
+            ['id' => 16, 'release_date' => '1989-07-04', 'title' => 'Ghostbusters 2', 'overview' => 'I still aint afraid of no ghosts'],
+            ['id' => 17, 'release_date' => '2016-04-14', 'title' => 'Ghostbusters', 'overview' => 'These chicks aint afraid of no ghosts'],
+        ];
+
+        $ghostbusters = new Movie(17, 'Ghostbusters', 'movie', '2016');
+        $ghostbusters->setPlot('These chicks aint afraid of no ghosts');
+        $ghostbustersTwo = new Movie(16, 'Ghostbusters 2', 'movie', '1989');
+        $ghostbustersTwo->setPlot('I still aint afraid of no ghosts');
+
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addRecommendationsFromTheMovieDB($movie, $data);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = [$ghostbustersTwo->provideMovieInterest(), $ghostbusters->provideMovieInterest()];
+        $this->assertEquals($expected, $movie->provideMovieInterest()['recommendations']);
+    }
+
+    public function testAddReviewFromTheMovieDBNoReviews()
+    {
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addReviewsFromTheMovieDB($movie, []);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $this->assertEquals([], $movie->provideMovieInterest()['reviews']);
+    }
+
+    public function testAddReviewFromTheMovieDB()
+    {
+        $data = [
+            ['content' => 'It was good', 'author' => 'genius', 'url' => 'www.truth.com'],
+            ['content' => 'It sucked', 'author' => 'idiot', 'url' => 'www.lies.com'],
+        ];
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addReviewsFromTheMovieDB($movie, $data);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = [
+            ['author' => 'genius', 'link' => 'www.truth.com', 'review' => 'It was good'],
+            ['author' => 'idiot', 'link' => 'www.lies.com', 'review' => 'It sucked'],
+        ];
+        $this->assertEquals($expected, $movie->provideMovieInterest()['reviews']);
+    }
+
+    public function testAddSimilarMoviesFromTheMovieDBNoSimilarMovies()
+    {
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addSimilarMoviesFromTheMovieDB($movie, []);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $this->assertEquals([], $movie->provideMovieInterest()['similarMovies']);
+    }
+
+    public function testAddSimilarMoviesFromTheMovieDB()
+    {
+        $data = [
+            ['id' => 16, 'release_date' => '1989-07-04', 'title' => 'Ghostbusters 2', 'overview' => 'I still aint afraid of no ghosts'],
+            ['id' => 17, 'release_date' => '2016-04-14', 'title' => 'Ghostbusters', 'overview' => 'These chicks aint afraid of no ghosts'],
+        ];
+
+        $ghostbusters = new Movie(17, 'Ghostbusters', 'movie', 2016);
+        $ghostbusters->setPlot('These chicks aint afraid of no ghosts');
+        $ghostbustersTwo = new Movie(16, 'Ghostbusters 2', 'movie', 1989);
+        $ghostbustersTwo->setPlot('I still aint afraid of no ghosts');
+
+        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = $this->builder->addSimilarMoviesFromTheMovieDB($movie, $data);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = [$ghostbustersTwo->provideMovieInterest(), $ghostbusters->provideMovieInterest()];
+        $this->assertEquals($expected, $movie->provideMovieInterest()['similarMovies']);
+    }
+
     public function testBuildWithGuideboxWithAlternateTitles()
     {
         $data = array_merge($this->guideBoxMovie(), ['alternate_titles' => ['Guardianes de la Galaxia', 'guardians qIb']]);
@@ -125,14 +321,23 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
     public function testBuildWithGuideboxSetCast()
     {
-        $cast = [['name' => 'Chris Pratt'], ['name' => 'Bradley Cooper']];
+        $cast = [
+            ['name' => 'Chris Pratt', 'character_name' => 'Starlord'],
+            ['name' => 'Bradley Cooper', 'character_name' => 'Rocket Raccoon'],
+        ];
         $data = array_merge($this->guideBoxMovie(), ['cast' => $cast]);
 
         $movie = $this->builder->buildFromGuidebox($data);
         $this->assertInstanceOf(Movie::class, $movie);
 
         $interest = $movie->provideMovieInterest();
-        $this->assertEquals(['Chris Pratt', 'Bradley Cooper'], $interest['cast']);
+        $this->assertEquals(
+            [
+                ['actor' => 'Chris Pratt', 'character' => 'Starlord'],
+                ['actor' => 'Bradley Cooper', 'character' => 'Rocket Raccoon']
+            ],
+            $interest['cast']
+        );
     }
 
     public function testBuildWithGuideboxSetDirectors()
@@ -209,27 +414,14 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = [
             'Title' => 'Guardians of the Galaxy',
-            'Plot' => 'Superheros save the world',
+            'Plot' => 'Superheros save the galaxy',
             'Poster' => 'N/A',
             'Type' => 'movie',
             'Year' => 2014,
-            'imdbID' => 15,
+            'imdbID' => 1234,
         ];
 
-        $expected = [
-            'id' => 15,
-            'alternateTitles' => [],
-            'cast' => [],
-            'directors' => [],
-            'episodes' => [],
-            'rating' => null,
-            'plot' => 'Superheros save the world',
-            'poster' => null,
-            'sources' => [],
-            'title' => 'Guardians of the Galaxy',
-            'type' => 'movie',
-            'year' => 2014,
-        ];
+        $expected = array_merge($this->expected(), ['poster' => null]);
 
         $movie = $this->builder->buildFromOmdb($data);
 
@@ -245,23 +437,10 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'Poster' => 'www.movieposters.com/guardians-of-the-galaxy',
             'Type' => 'movie',
             'Year' => 2014,
-            'imdbID' => 15,
+            'imdbID' => 1234,
         ];
 
-        $expected = [
-            'id' => 15,
-            'alternateTitles' => [],
-            'cast' => [],
-            'directors' => [],
-            'plot' => null,
-            'episodes' => [],
-            'rating' => null,
-            'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
-            'title' => 'Guardians of the Galaxy',
-            'sources' => [],
-            'type' => 'movie',
-            'year' => 2014,
-        ];
+        $expected = array_merge($this->expected(), ['plot' => null]);
 
         $movie = $this->builder->buildFromOmdb($data);
 
@@ -281,26 +460,242 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
         ];
 
-        $expected = [
-            'id' => 1234,
-            'alternateTitles' => [],
-            'cast' => [],
-            'directors' => [],
-            'episodes' => [],
-            'plot' => 'Superheros save the galaxy',
-            'rating' => null,
-            'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
-            'title' => 'Guardians of the Galaxy',
-            'sources' => [],
-            'type' => 'movie',
-            'year' => 2014,
-        ];
+        $expected = $this->expected();
 
         $movie = $this->builder->buildFromNetflix($data);
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $movie->provideMovieInterest());
+    }
+
+    public function testBuildWithTheMovieDB()
+    {
+        $movie = $this->builder->buildFromTheMovieDB($this->theMovieDB(), 'movie');
+
+        $expected = array_merge($this->expected(), ['poster' => null]);
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $movie->provideMovieInterest());
+    }
+
+    public function testBuildWithTheMovieDBUsingFirstAirDate()
+    {
+        $data = array_merge($this->theMovieDB(), ['release_date' => null, 'first_air_date' => '2014-05-28']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $expected = array_merge($this->expected(), ['poster' => null]);
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $movie->provideMovieInterest());
+    }
+
+    public function testBuildWithTheMovieDBUsingOriginalName()
+    {
+        $data = array_merge($this->theMovieDB(), ['title' => null, 'original_name' => 'Guardians of the Galaxy']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $expected = array_merge($this->expected(), ['poster' => null]);
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $movie->provideMovieInterest());
+    }
+
+    public function testBuildWithTheMovieDBWithAnOriginalTitle()
+    {
+        $data = array_merge($this->theMovieDB(), ['original_title' => 'The Guardians of the Galaxy']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $expected = array_merge($this->expected(), ['poster' => null, 'alternateTitles' => ['The Guardians of the Galaxy']]);
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $movie->provideMovieInterest());
+    }
+
+    public function testBuildWithTheMovieDBNameAloneDoesntAddAlternateTitles()
+    {
+        $data = array_merge($this->theMovieDB(), ['name' => 'The Guardians of the Galaxy']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals([], $movie->provideMovieInterest()['alternateTitles']);
+    }
+
+    public function testBuildWithTheMovieDBOriginalNameAloneDoesntAddAlternateTitle()
+    {
+        $data = array_merge($this->theMovieDB(), ['original_name' => 'The Guardians of the Galaxy']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals([], $movie->provideMovieInterest()['alternateTitles']);
+    }
+
+    public function testBuildWithTheMovieDBSameNameAndTitleDoesntAddAlternateTitle()
+    {
+        $data = array_merge($this->theMovieDB(), ['original_name' => 'The Guardians of the Galaxy', 'name' => 'The Guardians of the Galaxy']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals([], $movie->provideMovieInterest()['alternateTitles']);
+    }
+
+    public function testBuildWithTheMovieDBDifferentNameAndTitleAddsAlternateTitle()
+    {
+        $data = array_merge($this->theMovieDB(), ['original_name' => 'Guardians of the Galaxy', 'name' => 'The Guardians of the Galaxy']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals(['The Guardians of the Galaxy'], $movie->provideMovieInterest()['alternateTitles']);
+    }
+
+    public function testBuildWithTheMovieDBSetCollection()
+    {
+        $data = array_merge($this->theMovieDB(), ['belongs_to_collection' => ['name' => 'Marvel Collection']]);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals('Marvel Collection', $movie->provideMovieInterest()['collection']);
+    }
+
+    public function testBuildWithTheMovieDBSetBudget()
+    {
+        $data = array_merge($this->theMovieDB(), ['budget' => 40000000]);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals(40000000, $movie->provideMovieInterest()['budget']);
+    }
+
+    public function testBuildWithTheMovieDBAddGenres()
+    {
+        $data = array_merge($this->theMovieDB(), ['genres' => [['name' => 'Comic'], ['name' => 'Superhero'], ['name' => 'Science Fiction']]]);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals(['Comic', 'Superhero', 'Science Fiction'], $movie->provideMovieInterest()['genres']);
+    }
+
+    public function testBuildWithTheMovieDBSetHomepage()
+    {
+        $data = array_merge($this->theMovieDB(), ['homepage' => 'www.gotg.com']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals('www.gotg.com', $movie->provideMovieInterest()['homepage']);
+    }
+
+    public function testBuildWithTheMovieDBSetImdb()
+    {
+        $data = array_merge($this->theMovieDB(), ['imdb_id' => 'imdb198412414']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $expected = [['source' => 'imdb', 'externalId' => 'imdb198412414']];
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($expected, $movie->provideMovieInterest()['externalIds']);
+    }
+
+    public function testBuildWithTheMovieDBSetLanguage()
+    {
+        $data = array_merge($this->theMovieDB(), ['original_language' => 'English']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals(['English'], $movie->provideMovieInterest()['languages']);
+    }
+
+    public function testBuildWithTheMovieDBAddProductionCompanies()
+    {
+        $data = array_merge($this->theMovieDB(), ['production_companies' => [['name' => 'Marvel Studios'], ['name' => 'Disney']]]);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals(['Marvel Studios', 'Disney'], $movie->provideMovieInterest()['productionCompanies']);
+    }
+
+    public function testBuildWithTheMovieDBSetRevenue()
+    {
+        $data = array_merge($this->theMovieDB(), ['revenue' => 1231289401]);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals(1231289401, $movie->provideMovieInterest()['revenue']);
+    }
+
+    public function testBuildWithTheMovieDBSetRuntime()
+    {
+        $data = array_merge($this->theMovieDB(), ['runtime' => 144]);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals(144, $movie->provideMovieInterest()['runtime']);
+    }
+
+    public function testBuildWithTheMovieDBSetStatus()
+    {
+        $data = array_merge($this->theMovieDB(), ['status' => 'Awesome']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals('Awesome', $movie->provideMovieInterest()['status']);
+    }
+
+    public function testBuildWithTheMovieDBSetTagline()
+    {
+        $data = array_merge($this->theMovieDB(), ['tagline' => 'They will guard the galaxy']);
+        $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals('They will guard the galaxy', $movie->provideMovieInterest()['tagline']);
+    }
+
+    protected function expected()
+    {
+        return [
+            'id' => 1234,
+            'alternateTitles' => [],
+            'budget' => null,
+            'cast' => [],
+            'collection' => null,
+            'crew' => [],
+            'directors' => [],
+            'episodes' => [],
+            'externalIds' => [],
+            'genres' => [],
+            'homepage' => null,
+            'keywords' => [],
+            'languages' => [],
+            'plot' => 'Superheros save the galaxy',
+            'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
+            'productionCompanies' => [],
+            'productionCountries' => [],
+            'rating' => null,
+            'recommendations' => [],
+            'revenue' => null,
+            'reviews' => [],
+            'runtime' => null,
+            'similarMovies' => [],
+            'sources' => [],
+            'status' => null,
+            'tagline' => null,
+            'title' => 'Guardians of the Galaxy',
+            'type' => 'movie',
+            'year' => 2014,
+        ];
     }
 
     protected function guideBoxMovie()
@@ -310,6 +705,16 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'title' => 'Guardians of the Galaxy',
             'release_year' => 2014,
             'poster_120x171' => 'www.movieposters.com',
+        ];
+    }
+
+    protected function theMovieDB()
+    {
+        return [
+            'id' => 1234,
+            'title' => 'Guardians of the Galaxy',
+            'release_date' => '2014-05-28',
+            'overview' => 'Superheros save the galaxy',
         ];
     }
 }

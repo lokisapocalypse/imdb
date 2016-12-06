@@ -501,4 +501,43 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertNotNull($repository);
         $this->assertInstanceOf(MovieRepository::class, $repository);
     }
+
+    public function testChainingWithMethods()
+    {
+        $repository = $this->repository->withAlternateTitles();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+        $repository = $this->repository->withAllData();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+        $repository = $this->repository->withCast();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+        $repository = $this->repository->withKeywords();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+        $repository = $this->repository->withRecommendations();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+        $repository = $this->repository->withReviews();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+        $repository = $this->repository->withSimilarMovies();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+    }
 }

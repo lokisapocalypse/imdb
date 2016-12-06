@@ -6,13 +6,30 @@ class Movie
 {
     protected $id;
     protected $alternateTitles;
+    protected $budget;
     protected $cast;
+    protected $collection;
+    protected $crew;
     protected $directors;
     protected $episodes;
+    protected $externalIds;
+    protected $genres;
+    protected $homepage;
+    protected $keywords;
+    protected $languages;
     protected $plot;
     protected $poster;
+    protected $productionCompanies;
+    protected $productionCountries;
     protected $rating;
+    protected $recommendations;
+    protected $revenue;
+    protected $reviews;
+    protected $runtime;
+    protected $similarMovies;
     protected $sources;
+    protected $status;
+    protected $tagline;
     protected $title;
     protected $type;
     protected $year;
@@ -22,8 +39,18 @@ class Movie
         $this->id = $id;
         $this->alternateTitles = [];
         $this->cast = [];
+        $this->crew = [];
         $this->directors = [];
         $this->episodes = [];
+        $this->externalIds = [];
+        $this->genres = [];
+        $this->keywords = [];
+        $this->languages = [];
+        $this->productionCompanies = [];
+        $this->productionCountries = [];
+        $this->recommendations = [];
+        $this->reviews = [];
+        $this->similarMovies = [];
         $this->sources = [];
         $this->title = $title;
         $this->type = $type;
@@ -32,22 +59,170 @@ class Movie
 
     public function addAlternateTitle($alternateTitle)
     {
-        $this->alternateTitles[] = $alternateTitle;
+        if (!in_array($alternateTitle, $this->alternateTitles)) {
+            $this->alternateTitles[] = $alternateTitle;
+        }
     }
 
-    public function addEpisode(Episode $episode)
+    public function addCast(Cast $cast)
     {
-        $this->episodes[] = $episode;
-    }
+        $interest = $cast->provideCastInterest();
 
-    public function addCast($cast)
-    {
+        foreach ($this->cast as $existingCast) {
+            $existingInterest = $existingCast->provideCastInterest();
+
+            if ($existingInterest['actor'] == $interest['actor']
+                || $existingInterest['character'] == $interest['character']
+            ) {
+                return $this;
+            }
+        }
+
         $this->cast[] = $cast;
+        return $this;
+    }
+
+    public function addCrew(Crew $crew)
+    {
+        $interest = $crew->provideCrewInterest();
+
+        foreach ($this->crew as $existingCrew) {
+            $existingInterest = $existingCrew->provideCrewInterest();
+
+            if ($interest['name'] == $existingInterest['name']) {
+                return $this;
+            }
+        }
+
+        $this->crew[] = $crew;
+        return $this;
     }
 
     public function addDirector($director)
     {
-        $this->directors[] = $director;
+        if (!in_array($director, $this->directors)) {
+            $this->directors[] = $director;
+        }
+
+        return $this;
+    }
+
+    public function addEpisode(Episode $episode)
+    {
+        foreach ($this->episodes as $ep) {
+            if ($ep->identity() == $episode->identity()) {
+                return $this;
+            }
+        }
+
+        $this->episodes[] = $episode;
+        return $this;
+    }
+
+    public function addExternalId(ExternalId $externalId)
+    {
+        $interest = $externalId->provideExternalIdInterest();
+
+        foreach ($this->externalIds as $existingExternalId) {
+            $existingExternalIdInterest = $existingExternalId->provideExternalIdInterest();
+
+            if ($existingExternalIdInterest == $interest) {
+                return $this;
+            }
+        }
+
+        $this->externalIds[] = $externalId;
+
+        return $this;
+    }
+
+    public function addGenre($genre)
+    {
+        if (!in_array($genre, $this->genres)) {
+            $this->genres[] = $genre;
+        }
+
+        return $this;
+    }
+
+    public function addKeyword($keyword)
+    {
+        if (!in_array($keyword, $this->keywords)) {
+            $this->keywords[] = $keyword;
+        }
+
+        return $this;
+    }
+
+    public function addLanguage($language)
+    {
+        if (!in_array($language, $this->languages)) {
+            $this->languages[] = $language;
+        }
+
+        return $this;
+    }
+
+    public function addProductionCompany($productionCompany)
+    {
+        if (!in_array($productionCompany, $this->productionCompanies)) {
+            $this->productionCompanies[] = $productionCompany;
+        }
+
+        return $this;
+    }
+
+    public function addProductionCountry($productionCountry)
+    {
+        if (!in_array($productionCountry, $this->productionCountries)) {
+            $this->productionCountries[] = $productionCountry;
+        }
+
+        return $this;
+    }
+
+    public function addRecommendation(Movie $movie)
+    {
+        foreach ($this->recommendations as $recommendation) {
+            if ($movie->identity() == $recommendation->identity()) {
+                return $this;
+            }
+        }
+
+        $this->recommendations[] = $movie;
+        return $this;
+    }
+
+    public function addReview(Review $review)
+    {
+        $interest = $review->provideReviewInterest();
+
+        foreach ($this->reviews as $existingReview) {
+            $existingReviewInterest = $existingReview->provideReviewInterest();
+
+            if ($existingReviewInterest['review'] == $interest['review']) {
+                return $this;
+            }
+        }
+
+        $this->reviews[] = $review;
+        return $this;
+    }
+
+    public function addSimilarMovie(Movie $similarMovie)
+    {
+        $interest = $similarMovie->provideMovieInterest();
+
+        foreach ($this->similarMovies as $existingSimilarMovie) {
+            $existingSimilarMovieInterest = $existingSimilarMovie->provideMovieInterest();
+
+            if ($existingSimilarMovieInterest == $interest) {
+                return $this;
+            }
+        }
+
+        $this->similarMovies[] = $similarMovie;
+        return $this;
     }
 
     public function addSource($type, $name, $link, array $details = [])
@@ -98,22 +273,61 @@ class Movie
             });
         }
 
-        $episodes = [];
+        $cast = array_map(function ($c) {
+            return $c->provideCastInterest();
+        }, $this->cast);
 
-        foreach ($this->episodes as $episode) {
-            $episodes[] = $episode->provideEpisodeInterest();
-        }
+        $crew = array_map(function ($c) {
+            return $c->provideCrewInterest();
+        }, $this->crew);
+
+        $episodes = array_map(function ($e) {
+            return $e->provideEpisodeInterest();
+        }, $this->episodes);
+
+        $externalIds = array_map(function ($e) {
+            return $e->provideExternalIdInterest();
+        }, $this->externalIds);
+
+        $recommendations = array_map(function ($r) {
+            return $r->provideMovieInterest();
+        }, $this->recommendations);
+
+        $reviews = array_map(function ($r) {
+            return $r->provideReviewInterest();
+        }, $this->reviews);
+
+        $similarMovies = array_map(function ($s) {
+            return $s->provideMovieInterest();
+        }, $this->similarMovies);
 
         return [
             'id' => $this->id,
             'alternateTitles' => $this->alternateTitles,
-            'cast' => $this->cast,
+            'budget' => $this->budget,
+            'cast' => $cast,
+            'collection' => $this->collection,
+            'crew' => $crew,
             'directors' => $this->directors,
             'episodes' => $episodes,
+            'externalIds' => $externalIds,
+            'genres' => $this->genres,
+            'homepage' => $this->homepage,
+            'keywords' => $this->keywords,
+            'languages' => $this->languages,
             'plot' => $this->plot,
             'poster' => $this->poster,
+            'productionCompanies' => $this->productionCompanies,
+            'productionCountries' => $this->productionCountries,
             'rating' => $this->rating,
+            'recommendations' => $recommendations,
+            'revenue' => $this->revenue,
+            'reviews' => $reviews,
+            'runtime' => $this->runtime,
+            'similarMovies' => $similarMovies,
             'sources' => $sources,
+            'status' => $this->status,
+            'tagline' => $this->tagline,
             'title' => $this->title,
             'type' => $this->type,
             'year' => $this->year,
@@ -159,26 +373,80 @@ class Movie
             return 0;
         });
 
-        $episodes = [];
+        $cast = array_map(function ($c) {
+            return $c->provideCastInterest();
+        }, $this->cast);
 
-        foreach ($this->episodes as $episode) {
-            $episodes[] = $episode->provideEpisodeInterest();
-        }
+        $crew = array_map(function ($c) {
+            return $c->provideCrewInterest();
+        }, $this->crew);
+
+        $episodes = array_map(function ($e) {
+            return $e->provideEpisodeInterest();
+        }, $this->episodes);
+
+        $externalIds = array_map(function ($e) {
+            return $e->provideExternalIdInterest();
+        }, $this->externalIds);
+
+        $recommendations = array_map(function ($r) {
+            return $r->provideMovieInterest();
+        }, $this->recommendations);
+
+        $reviews = array_map(function ($r) {
+            return $r->provideReviewInterest();
+        }, $this->reviews);
+
+        $similarMovies = array_map(function ($s) {
+            return $s->provideMovieInterest();
+        }, $this->similarMovies);
 
         return [
             'id' => $this->id,
             'alternateTitles' => $this->alternateTitles,
-            'cast' => $this->cast,
+            'budget' => $this->budget,
+            'cast' => $cast,
+            'collection' => $this->collection,
+            'crew' => $crew,
             'directors' => $this->directors,
             'episodes' => $episodes,
+            'externalIds' => $externalIds,
+            'genres' => $this->genres,
+            'homepage' => $this->homepage,
+            'keywords' => $this->keywords,
+            'languages' => $this->languages,
             'plot' => $this->plot,
             'poster' => $this->poster,
+            'productionCompanies' => $this->productionCompanies,
+            'productionCountries' => $this->productionCountries,
             'rating' => $this->rating,
+            'recommendations' => $recommendations,
+            'revenue' => $this->revenue,
+            'reviews' => $reviews,
+            'runtime' => $this->runtime,
+            'similarMovies' => $similarMovies,
             'sources' => $sources,
+            'status' => $this->status,
+            'tagline' => $this->tagline,
             'title' => $this->title,
             'type' => $this->type,
             'year' => $this->year,
         ];
+    }
+
+    public function setBudget($budget)
+    {
+        $this->budget = $budget;
+    }
+
+    public function setCollection($collection)
+    {
+        $this->collection = $collection;
+    }
+
+    public function setHomepage($homepage)
+    {
+        $this->homepage = $homepage;
     }
 
     public function setPlot($plot)
@@ -194,6 +462,26 @@ class Movie
     public function setRating($rating)
     {
         $this->rating = $rating;
+    }
+
+    public function setRevenue($revenue)
+    {
+        $this->revenue = $revenue;
+    }
+
+    public function setRuntime($runtime)
+    {
+        $this->runtime = $runtime;
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    public function setTagline($tagline)
+    {
+        $this->tagline = $tagline;
     }
 
     public function title()

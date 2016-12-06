@@ -23,46 +23,279 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
             'sources' => [],
             'poster' => null,
             'plot' => null,
+            'crew' => [],
+            'cast' => [],
         ];
 
         $this->episode = new Episode(15, 'Guardians of the Galaxy', '2014-05-28', 1, 1);
     }
 
-    public function testAddSource()
+    public function testAddCastNoExistingCast()
     {
-        $interest = $this->episode->provideepisodeInterest();
+        $interest = $this->episode->provideEpisodeInterest();
+        $this->assertEquals([], $interest['cast']);
+
+        $episode = $this->episode->addCast(new Cast('Bill Murray', 'Peter Venkman'));
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $episode->provideEpisodeInterest();
+        $expected = [
+            ['actor' => 'Bill Murray', 'character' => 'Peter Venkman'],
+        ];
+
+        $this->assertEquals($expected, $interest['cast']);
+    }
+
+    public function testAddCastWithExistingCastAndNewCastAdded()
+    {
+        $episode = $this->episode->addCast(new Cast('Bill Murray', 'Peter Venkman'));
+        $episode = $this->episode->addCast(new Cast('Dan Akroyd', 'Raymond Stantz'));
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $episode->provideEpisodeInterest();
+        $expected = [
+            ['actor' => 'Bill Murray', 'character' => 'Peter Venkman'],
+            ['actor' => 'Dan Akroyd', 'character' => 'Raymond Stantz'],
+        ];
+
+        $this->assertEquals($expected, $interest['cast']);
+    }
+
+    public function testAddDuplicateCast()
+    {
+        $episode = $this->episode->addCast(new Cast('Bill Murray', 'Peter Venkman'));
+        $episode = $this->episode->addCast(new Cast('Bill Murray', 'Peter Venkman'));
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $episode->provideEpisodeInterest();
+        $expected = [
+            ['actor' => 'Bill Murray', 'character' => 'Peter Venkman'],
+        ];
+
+        $this->assertEquals($expected, $interest['cast']);
+    }
+
+    public function testAddCrewWithNoCrew()
+    {
+        $interest = $this->episode->provideEpisodeInterest();
+        $this->assertEquals([], $interest['crew']);
+
+        $episode = $this->episode->addCrew(new Crew('Ivan Reitman', 'Director', 'directors'));
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $episode->provideEpisodeInterest();
+        $expected = [
+            ['department' => 'directors', 'job' => 'Director', 'name' => 'Ivan Reitman'],
+        ];
+
+        $this->assertEquals($expected, $interest['crew']);
+    }
+
+    public function testAddNewCrewWithExistingCrew()
+    {
+        $episode = $this->episode->addCrew(new Crew('Ivan Reitman', 'Director', 'directors'));
+        $episode = $this->episode->addCrew(new Crew('Harold Ramis', 'Writer', 'writers'));
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $episode->provideEpisodeInterest();
+        $expected = [
+            ['department' => 'directors', 'job' => 'Director', 'name' => 'Ivan Reitman'],
+            ['department' => 'writers', 'job' => 'Writer', 'name' => 'Harold Ramis'],
+        ];
+
+        $this->assertEquals($expected, $interest['crew']);
+    }
+
+    public function testAddDuplicateCrew()
+    {
+        $episode = $this->episode->addCrew(new Crew('Ivan Reitman', 'Director', 'directors'));
+        $episode = $this->episode->addCrew(new Crew('Ivan Reitman', 'Director', 'directors'));
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $episode->provideEpisodeInterest();
+        $expected = [
+            ['department' => 'directors', 'job' => 'Director', 'name' => 'Ivan Reitman'],
+        ];
+
+        $this->assertEquals($expected, $interest['crew']);
+    }
+
+    public function testAddSourceWithNoSources()
+    {
+        $interest = $this->episode->provideEpisodeInterest();
         $this->assertEquals([], $interest['sources']);
 
-        $this->episode->addSource('free', 'Netflix', 'www.netflix.com');
-        $this->episode->addSource('purchase', 'Amazon', 'www.amazon.com');
+        $episode = $this->episode->addSource('free', 'Netflix', 'www.netflix.com');
 
-        $interest = $this->episode->provideepisodeInterest();
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
 
-        $this->assertNotEquals([], $interest['sources']);
+        $interest = $this->episode->provideEpisodeInterest();
+        $expected = [
+            'free' => [[
+                'details' => [],
+                'link' => 'www.netflix.com',
+                'name' => 'Netflix',
+                'type' => 'free',
+            ]]
+        ];
+        $this->assertEquals($expected, $interest['sources']);
+    }
+
+    public function testAddSourceWithExistingSourcesAndNewSource()
+    {
+        $interest = $this->episode->provideEpisodeInterest();
+        $this->assertEquals([], $interest['sources']);
+
+        $episode = $this->episode->addSource('free', 'Netflix', 'www.netflix.com');
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $episode = $this->episode->addSource('purchase', 'Amazon', 'www.amazon.com');
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $this->episode->provideEpisodeInterest();
+
+        $expected = [
+            'free' => [[
+                'details' => [],
+                'link' => 'www.netflix.com',
+                'name' => 'Netflix',
+                'type' => 'free',
+            ]],
+            'purchase' => [[
+                'details' => [],
+                'link' => 'www.amazon.com',
+                'name' => 'Amazon',
+                'type' => 'purchase',
+            ]],
+        ];
+
+        $this->assertEquals($expected, $interest['sources']);
+    }
+
+    public function testAddSourceWithDuplicateSources()
+    {
+        $interest = $this->episode->provideEpisodeInterest();
+        $this->assertEquals([], $interest['sources']);
+
+        $episode = $this->episode->addSource('free', 'Netflix', 'www.netflix.com');
+        $episode = $this->episode->addSource('free', 'Netflix', 'www.netflix.com');
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $this->episode->provideEpisodeInterest();
+        $expected = [
+            'free' => [[
+                'details' => [],
+                'link' => 'www.netflix.com',
+                'name' => 'Netflix',
+                'type' => 'free',
+            ]]
+        ];
+        $this->assertEquals($expected, $interest['sources']);
+    }
+
+    public function testAddSourceWithDifferentTypes()
+    {
+        $interest = $this->episode->provideEpisodeInterest();
+        $this->assertEquals([], $interest['sources']);
+
+        $episode = $this->episode->addSource('free', 'Netflix', 'www.netflix.com');
+        $episode = $this->episode->addSource('subscription', 'Netflix', 'www.netflix.com');
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $this->episode->provideEpisodeInterest();
+        $expected = [
+            'free' => [[
+                'details' => [],
+                'link' => 'www.netflix.com',
+                'name' => 'Netflix',
+                'type' => 'free',
+            ]],
+            'subscription' => [[
+                'details' => [],
+                'link' => 'www.netflix.com',
+                'name' => 'Netflix',
+                'type' => 'subscription',
+            ]],
+        ];
+
+        $this->assertEquals($expected, $interest['sources']);
+    }
+
+    public function testAddMultipleSourcesOfTheSameType()
+    {
+        $interest = $this->episode->provideEpisodeInterest();
+        $this->assertEquals([], $interest['sources']);
+
+        $episode = $this->episode->addSource('free', 'Netflix', 'www.netflix.com');
+        $episode = $this->episode->addSource('free', 'Amazon', 'www.amazon.com');
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $interest = $this->episode->provideEpisodeInterest();
+        $expected = [
+            'free' => [
+                [
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Netflix',
+                    'type' => 'free',
+                ],
+                [
+                    'details' => [],
+                    'link' => 'www.amazon.com',
+                    'name' => 'Amazon',
+                    'type' => 'free',
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expected, $interest['sources']);
     }
 
     public function testIdentity()
     {
-        $this->assertEquals(15, $this->episode->identity());
+        $this->assertEquals('s01e01-15', $this->episode->identity());
     }
 
     public function testProvideInterestSimpleObject()
     {
-        $this->assertEquals($this->expected, $this->episode->provideepisodeInterest());
+        $this->assertEquals($this->expected, $this->episode->provideEpisodeInterest());
     }
 
     public function testSetPoster()
     {
         $this->episode->setPoster('www.episodeposters.com/guardians-of-the-galaxy');
         $expected = array_merge($this->expected, ['poster' => 'www.episodeposters.com/guardians-of-the-galaxy']);
-        $this->assertEquals($expected, $this->episode->provideepisodeInterest());
+        $this->assertEquals($expected, $this->episode->provideEpisodeInterest());
     }
 
     public function testSetPlot()
     {
         $this->episode->setPlot('Superheros save the world');
         $expected = array_merge($this->expected, ['plot' => 'Superheros save the world']);
-        $this->assertEquals($expected, $this->episode->provideepisodeInterest());
+        $this->assertEquals($expected, $this->episode->provideEpisodeInterest());
     }
 
     public function testTitle()

@@ -25,4 +25,11 @@ interface MovieRepository
     public function searchForShows();
     public function setThreshold($threshold);
     public function tryFuzzyOnFail();
+    public function withAlternateTitles();
+    public function withAllData();
+    public function withCast();
+    public function withKeywords();
+    public function withRecommendations();
+    public function withSimilarMovies();
+    public function withReviews();
 }
