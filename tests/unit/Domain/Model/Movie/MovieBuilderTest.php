@@ -136,8 +136,10 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $ghostbusters = new Movie(17, 'Ghostbusters', 'movie', '2016');
         $ghostbusters->setPlot('These chicks aint afraid of no ghosts');
+        $ghostbusters->addExternalId(new ExternalId(17, 'The Movie DB'));
         $ghostbustersTwo = new Movie(16, 'Ghostbusters 2', 'movie', '1989');
         $ghostbustersTwo->setPlot('I still aint afraid of no ghosts');
+        $ghostbustersTwo->addExternalId(new ExternalId(16, 'The Movie DB'));
 
         $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
         $movie = $this->builder->addRecommendationsFromTheMovieDB($movie, $data);
@@ -197,12 +199,14 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             ['id' => 17, 'release_date' => '2016-04-14', 'title' => 'Ghostbusters', 'overview' => 'These chicks aint afraid of no ghosts'],
         ];
 
-        $ghostbusters = new Movie(17, 'Ghostbusters', 'movie', 2016);
+        $ghostbusters = new Movie(17, 'Ghostbusters', 'movie', '2016');
         $ghostbusters->setPlot('These chicks aint afraid of no ghosts');
-        $ghostbustersTwo = new Movie(16, 'Ghostbusters 2', 'movie', 1989);
+        $ghostbusters->addExternalId(new ExternalId(17, 'The Movie DB'));
+        $ghostbustersTwo = new Movie(16, 'Ghostbusters 2', 'movie', '1989');
         $ghostbustersTwo->setPlot('I still aint afraid of no ghosts');
+        $ghostbustersTwo->addExternalId(new ExternalId(16, 'The Movie DB'));
 
-        $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
+        $movie = new Movie(15, 'Ghostbusters', 'movie', '1984');
         $movie = $this->builder->addSimilarMoviesFromTheMovieDB($movie, $data);
 
         $this->assertNotNull($movie);
@@ -421,7 +425,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'imdbID' => 1234,
         ];
 
-        $expected = array_merge($this->expected(), ['poster' => null]);
+        $expected = array_merge($this->expected('OMDB'), ['poster' => null]);
 
         $movie = $this->builder->buildFromOmdb($data);
 
@@ -440,7 +444,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'imdbID' => 1234,
         ];
 
-        $expected = array_merge($this->expected(), ['plot' => null]);
+        $expected = array_merge($this->expected('OMDB'), ['plot' => null]);
 
         $movie = $this->builder->buildFromOmdb($data);
 
@@ -460,7 +464,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
         ];
 
-        $expected = $this->expected();
+        $expected = $this->expected('Netflix');
 
         $movie = $this->builder->buildFromNetflix($data);
 
@@ -473,7 +477,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $movie = $this->builder->buildFromTheMovieDB($this->theMovieDB(), 'movie');
 
-        $expected = array_merge($this->expected(), ['poster' => null]);
+        $expected = array_merge($this->expected('The Movie DB'), ['poster' => null]);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $movie->provideMovieInterest());
@@ -484,7 +488,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $data = array_merge($this->theMovieDB(), ['release_date' => null, 'first_air_date' => '2014-05-28']);
         $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
 
-        $expected = array_merge($this->expected(), ['poster' => null]);
+        $expected = array_merge($this->expected('The Movie DB'), ['poster' => null]);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $movie->provideMovieInterest());
@@ -495,7 +499,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $data = array_merge($this->theMovieDB(), ['title' => null, 'original_name' => 'Guardians of the Galaxy']);
         $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
 
-        $expected = array_merge($this->expected(), ['poster' => null]);
+        $expected = array_merge($this->expected('The Movie DB'), ['poster' => null]);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $movie->provideMovieInterest());
@@ -506,7 +510,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $data = array_merge($this->theMovieDB(), ['original_title' => 'The Guardians of the Galaxy']);
         $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
 
-        $expected = array_merge($this->expected(), ['poster' => null, 'alternateTitles' => ['The Guardians of the Galaxy']]);
+        $expected = array_merge($this->expected('The Movie DB'), ['poster' => null, 'alternateTitles' => ['The Guardians of the Galaxy']]);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $movie->provideMovieInterest());
@@ -597,7 +601,10 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $data = array_merge($this->theMovieDB(), ['imdb_id' => 'imdb198412414']);
         $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
 
-        $expected = [['source' => 'imdb', 'externalId' => 'imdb198412414']];
+        $expected = [
+            ['source' => 'The Movie DB', 'externalId' => '1234'],
+            ['source' => 'IMDB', 'externalId' => 'imdb198412414'],
+        ];
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $movie->provideMovieInterest()['externalIds']);
@@ -663,9 +670,9 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('They will guard the galaxy', $movie->provideMovieInterest()['tagline']);
     }
 
-    protected function expected()
+    protected function expected($source)
     {
-        return [
+        $expected = [
             'id' => 1234,
             'alternateTitles' => [],
             'budget' => null,
@@ -696,6 +703,17 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'type' => 'movie',
             'year' => 2014,
         ];
+
+        $externalId = 0;
+        if ($source == 'Guidebox') {
+            $externalId = 15;
+        } else {
+            $externalId = 1234;
+        }
+
+        $expected['externalIds'][] = ['source' => $source, 'externalId' => $externalId];
+
+        return $expected;
     }
 
     protected function guideBoxMovie()

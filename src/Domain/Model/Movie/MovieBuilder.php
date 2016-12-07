@@ -100,6 +100,8 @@ class MovieBuilder
             $year
         );
 
+        $movie->addExternalId(new ExternalId($data['id'], 'Guidebox'));
+
         if (!empty($data['alternate_titles'])) {
             foreach ($data['alternate_titles'] as $alternateTitle) {
                 $movie->addAlternateTitle($alternateTitle);
@@ -174,12 +176,14 @@ class MovieBuilder
         );
         $movie->setPoster($data['poster']);
         $movie->setPlot($data['summary']);
+        $movie->addExternalId(new ExternalId($data['show_id'], 'Netflix'));
         return $movie;
     }
 
     public function buildFromOmdb(array $data)
     {
         $movie = new Movie($data['imdbID'], $data['Title'], $data['Type'], $data['Year']);
+        $movie->addExternalId(new ExternalId($data['imdbID'], 'OMDB'));
 
         if (!empty($data['Poster']) && $data['Poster'] != 'N/A') {
             $movie->setPoster($data['Poster']);
@@ -202,6 +206,7 @@ class MovieBuilder
             $type,
             $releaseDate->format('Y')
         );
+        $movie->addExternalId(new ExternalId($data['id'], 'The Movie DB'));
 
         if (!empty($data['original_title'])) {
             $movie->addAlternateTitle($data['original_title']);
@@ -232,7 +237,7 @@ class MovieBuilder
         }
 
         if (!empty($data['imdb_id'])) {
-            $movie->addExternalId(new ExternalId($data['imdb_id'], 'imdb'));
+            $movie->addExternalId(new ExternalId($data['imdb_id'], 'IMDB'));
         }
 
         if (!empty($data['original_language'])) {
