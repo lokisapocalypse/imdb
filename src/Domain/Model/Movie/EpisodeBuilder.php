@@ -62,13 +62,13 @@ class EpisodeBuilder
 
         if (!empty($data['crew'])) {
             foreach ($data['crew'] as $crew) {
-                $episode->addCrew(new Crew($crew['name'], $crew['job'], $crew['department']));
+                $episode->addCrew($crew['name'], $crew['job'], $crew['department']);
             }
         }
 
         if (!empty($data['guest_stars'])) {
             foreach ($data['guest_stars'] as $guestStar) {
-                $episode->addCast(new Cast($guestStar['name'], $guestStar['character']));
+                $episode->addCast($guestStar['name'], $guestStar['character']);
             }
         }
 

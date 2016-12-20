@@ -35,7 +35,7 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
         $interest = $this->episode->provideEpisodeInterest();
         $this->assertEquals([], $interest['cast']);
 
-        $episode = $this->episode->addCast(new Cast('Bill Murray', 'Peter Venkman'));
+        $episode = $this->episode->addCast('Bill Murray', 'Peter Venkman');
 
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);
@@ -50,8 +50,8 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
 
     public function testAddCastWithExistingCastAndNewCastAdded()
     {
-        $episode = $this->episode->addCast(new Cast('Bill Murray', 'Peter Venkman'));
-        $episode = $this->episode->addCast(new Cast('Dan Akroyd', 'Raymond Stantz'));
+        $episode = $this->episode->addCast('Bill Murray', 'Peter Venkman');
+        $episode = $this->episode->addCast('Dan Akroyd', 'Raymond Stantz');
 
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);
@@ -67,8 +67,8 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
 
     public function testAddDuplicateCast()
     {
-        $episode = $this->episode->addCast(new Cast('Bill Murray', 'Peter Venkman'));
-        $episode = $this->episode->addCast(new Cast('Bill Murray', 'Peter Venkman'));
+        $episode = $this->episode->addCast('Bill Murray', 'Peter Venkman');
+        $episode = $this->episode->addCast('Bill Murray', 'Peter Venkman');
 
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);
@@ -86,7 +86,7 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
         $interest = $this->episode->provideEpisodeInterest();
         $this->assertEquals([], $interest['crew']);
 
-        $episode = $this->episode->addCrew(new Crew('Ivan Reitman', 'Director', 'directors'));
+        $episode = $this->episode->addCrew('Ivan Reitman', 'Director', 'directors');
 
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);
@@ -101,8 +101,8 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
 
     public function testAddNewCrewWithExistingCrew()
     {
-        $episode = $this->episode->addCrew(new Crew('Ivan Reitman', 'Director', 'directors'));
-        $episode = $this->episode->addCrew(new Crew('Harold Ramis', 'Writer', 'writers'));
+        $episode = $this->episode->addCrew('Ivan Reitman', 'Director', 'directors');
+        $episode = $this->episode->addCrew('Harold Ramis', 'Writer', 'writers');
 
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);
@@ -118,8 +118,8 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
 
     public function testAddDuplicateCrew()
     {
-        $episode = $this->episode->addCrew(new Crew('Ivan Reitman', 'Director', 'directors'));
-        $episode = $this->episode->addCrew(new Crew('Ivan Reitman', 'Director', 'directors'));
+        $episode = $this->episode->addCrew('Ivan Reitman', 'Director', 'directors');
+        $episode = $this->episode->addCrew('Ivan Reitman', 'Director', 'directors');
 
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);

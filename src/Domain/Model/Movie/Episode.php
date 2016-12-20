@@ -27,37 +27,35 @@ class Episode
         $this->title = $title;
     }
 
-    public function addCast(Cast $cast)
+    public function addCast($name, $character)
     {
-        $interest = $cast->provideCastInterest();
+        foreach ($this->cast as $cast) {
+            $interest = $cast->provideCastInterest();
 
-        foreach ($this->cast as $existingCast) {
-            $existingInterest = $existingCast->provideCastInterest();
-
-            if ($existingInterest['actor'] == $interest['actor']
-                || $existingInterest['character'] == $interest['character']
-            ) {
+            if ($interest['actor'] == $name && $interest['character'] == $character) {
                 return $this;
             }
         }
 
-        $this->cast[] = $cast;
+        $this->cast[] = new Cast($name, $character);
         return $this;
     }
 
-    public function addCrew(Crew $crew)
+    public function addCrew($name, $job, $department)
     {
-        $interest = $crew->provideCrewInterest();
+        $newCrew = [
+            'department' => $department,
+            'job' => $job,
+            'name' => $name,
+        ];
 
-        foreach ($this->crew as $existingCrew) {
-            $existingInterest = $existingCrew->provideCrewInterest();
-
-            if ($interest['name'] == $existingInterest['name']) {
+        foreach ($this->crew as $crew) {
+            if ($newCrew == $crew->provideCrewInterest()) {
                 return $this;
             }
         }
 
-        $this->crew[] = $crew;
+        $this->crew[] = new Crew($name, $job, $department);
         return $this;
     }
 
