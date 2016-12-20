@@ -61,16 +61,13 @@ class MovieTest extends PHPUnit_Framework_TestCase
 
     public function testAddCast()
     {
-        $venkman = new Cast('Bill Murray', 'Peter Venkman');
-        $movie = $this->movie->addCast($venkman);
+        $movie = $this->movie->addCast('Bill Murray', 'Peter Venkman');
         $expected = array_merge($this->expected, ['cast' => [['actor' => 'Bill Murray', 'character' => 'Peter Venkman']]]);
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
 
         $this->assertInstanceOf(Movie::class, $movie);
 
-        $stantz = new Cast('Dan Akroyd', 'Raymond Stantz');
-
-        $movie = $this->movie->addCast($stantz);
+        $movie = $this->movie->addCast('Dan Akroyd', 'Raymond Stantz');
         $this->assertInstanceOf(Movie::class, $movie);
 
         $expected = array_merge(
@@ -92,17 +89,13 @@ class MovieTest extends PHPUnit_Framework_TestCase
 
     public function testAddCastDoesNotAddDuplicateCast()
     {
-        $venkman = new Cast('Bill Murray', 'Peter Venkman');
-
-        $movie = $this->movie->addCast($venkman);
+        $movie = $this->movie->addCast('Bill Murray', 'Peter Venkman');
         $expected = array_merge($this->expected, ['cast' => [['actor' => 'Bill Murray', 'character' => 'Peter Venkman']]]);
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
 
         $this->assertInstanceOf(Movie::class, $movie);
 
-        $venkman = new Cast('Bill Murray', 'Peter Venkman');
-
-        $movie = $this->movie->addCast($venkman);
+        $movie = $this->movie->addCast('Bill Murray', 'Peter Venkman');
         $this->assertInstanceOf(Movie::class, $movie);
 
         $expected = array_merge(
@@ -123,15 +116,12 @@ class MovieTest extends PHPUnit_Framework_TestCase
 
     public function testAddCrew()
     {
-        $director = new Crew('Ivan Reitman', 'Director', 'directors');
-        $writer = new Crew('Harold Ramis', 'Writer', 'writers');
-
-        $movie = $this->movie->addCrew($director);
+        $movie = $this->movie->addCrew('Ivan Reitman', 'Director', 'directors');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
 
-        $movie = $this->movie->addCrew($writer);
+        $movie = $this->movie->addCrew('Harold Ramis', 'Writer', 'writers');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
@@ -155,14 +145,12 @@ class MovieTest extends PHPUnit_Framework_TestCase
 
     public function testAddCrewDoesntAddDuplicateCrew()
     {
-        $director = new Crew('Ivan Reitman', 'Director', 'directors');
-
-        $movie = $this->movie->addCrew($director);
+        $movie = $this->movie->addCrew('Ivan Reitman', 'Director', 'directors');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
 
-        $movie = $this->movie->addCrew($director);
+        $movie = $this->movie->addCrew('Ivan Reitman', 'Director', 'directors');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);

@@ -19,15 +19,13 @@ class MovieBuilder
     {
         if (!empty($data['cast'])) {
             foreach ($data['cast'] as $details) {
-                $cast = new Cast($details['name'], $details['character']);
-                $movie->addCast($cast);
+                $movie->addCast($details['name'], $details['character']);
             }
         }
 
         if (!empty($data['crew'])) {
             foreach ($data['crew'] as $details) {
-                $crew = new Crew($details['name'], $details['job'], $details['department']);
-                $movie->addCrew($crew);
+                $movie->addCrew($details['name'], $details['job'], $details['department']);
             }
         }
 
@@ -153,7 +151,7 @@ class MovieBuilder
 
         if (!empty($data['cast'])) {
             foreach ($data['cast'] as $cast) {
-                $movie->addCast(new Cast($cast['name'], $cast['character_name']));
+                $movie->addCast($cast['name'], $cast['character_name']);
             }
         }
 
