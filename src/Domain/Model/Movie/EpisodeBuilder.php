@@ -6,6 +6,41 @@ use DateTime;
 
 class EpisodeBuilder
 {
+    public function buildFromEpisodeInterest(array $interest)
+    {
+        $episode = new Episode(
+            $interest['id'],
+            $interest['title'],
+            $interest['firstAired'],
+            $interest['season'],
+            $interest['episode']
+        );
+
+        $episode->setPlot($interest['plot']);
+        $episode->setPoster($interest['poster']);
+
+        foreach ($interest['cast'] as $cast) {
+            $episode->addCast($cast['actor'], $cast['character']);
+        }
+
+        foreach ($interest['crew'] as $crew) {
+            $episode->addCrew($crew['name'], $crew['job'], $crew['department']);
+        }
+
+        foreach ($interest['sources'] as $type => $sources) {
+            foreach ($sources as $source) {
+                $episode->addSource(
+                    $type,
+                    $source['name'],
+                    $source['link'],
+                    $source['details']
+                );
+            }
+        }
+
+        return $episode;
+    }
+
     public function buildFromGuideBox(array $details)
     {
         $episode = new Episode(

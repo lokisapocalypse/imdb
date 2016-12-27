@@ -2,6 +2,7 @@
 
 namespace Fusani\Movies\Domain\Model\Movie;
 
+use DateTime;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -136,10 +137,10 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $ghostbusters = new Movie(17, 'Ghostbusters', 'movie', '2016');
         $ghostbusters->setPlot('These chicks aint afraid of no ghosts');
-        $ghostbusters->addExternalId(new ExternalId(17, 'The Movie DB'));
+        $ghostbusters->addExternalId(17, 'The Movie DB');
         $ghostbustersTwo = new Movie(16, 'Ghostbusters 2', 'movie', '1989');
         $ghostbustersTwo->setPlot('I still aint afraid of no ghosts');
-        $ghostbustersTwo->addExternalId(new ExternalId(16, 'The Movie DB'));
+        $ghostbustersTwo->addExternalId(16, 'The Movie DB');
 
         $movie = new Movie(15, 'Ghostbusters', 'movie', 1984);
         $movie = $this->builder->addRecommendationsFromTheMovieDB($movie, $data);
@@ -201,10 +202,10 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $ghostbusters = new Movie(17, 'Ghostbusters', 'movie', '2016');
         $ghostbusters->setPlot('These chicks aint afraid of no ghosts');
-        $ghostbusters->addExternalId(new ExternalId(17, 'The Movie DB'));
+        $ghostbusters->addExternalId(17, 'The Movie DB');
         $ghostbustersTwo = new Movie(16, 'Ghostbusters 2', 'movie', '1989');
         $ghostbustersTwo->setPlot('I still aint afraid of no ghosts');
-        $ghostbustersTwo->addExternalId(new ExternalId(16, 'The Movie DB'));
+        $ghostbustersTwo->addExternalId(16, 'The Movie DB');
 
         $movie = new Movie(15, 'Ghostbusters', 'movie', '1984');
         $movie = $this->builder->addSimilarMoviesFromTheMovieDB($movie, $data);
@@ -412,6 +413,252 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
 
         $interest = $movie->provideMovieInterest();
         $this->assertNotEmpty($interest['sources']['purchase']);
+    }
+
+    public function testBuildWithMovieInterest()
+    {
+        $interest = [
+            'id' => 15,
+            'alternateTitles' => ['NYP', 'New Years Party'],
+            'budget' => 24000000,
+            'cast' => [
+                ['actor' => 'Joe', 'character' => 'Fred'],
+                ['actor' => 'Bob', 'character' => 'Soloman'],
+            ],
+            'collection' => 'Party Time',
+            'crew' => [
+                ['department' => 'writing', 'job' => 'writer', 'name' => 'Susie'],
+                ['department' => 'directors', 'job' => 'director', 'name' => 'Elliot'],
+            ],
+            'directors' => ['Ivan Reitman', 'Dick Clark'],
+            'episodes' => [[
+                'id' => 15,
+                'cast' => [
+                    ['actor' => 'Joe', 'character' => 'Fred'],
+                    ['actor' => 'Bob', 'character' => 'Soloman'],
+                ],
+                'crew' => [
+                    ['department' => 'writing', 'job' => 'writer', 'name' => 'Susie'],
+                    ['department' => 'directors', 'job' => 'director', 'name' => 'Elliot'],
+                ],
+                'episode' => 1,
+                'firstAired' => new DateTime('2016-01-01'),
+                'plot' => 'New Years party',
+                'poster' => 'www.newyearsparty.com',
+                'season' => 1,
+                'sources' => [
+                    'Subscription' => [[
+                        'details' => [],
+                        'link' => 'www.netflix.com',
+                        'name' => 'Netflix',
+                        'type' => 'Subscription',
+                    ]],
+                    'Paid' => [[
+                        'details' => ['price' => '9.99'],
+                        'link' => 'www.amazon.com',
+                        'name' => 'Amazon',
+                        'type' => 'Paid',
+                    ]],
+                ],
+                'title' => 'Its party time',
+            ], [
+                'id' => 15,
+                'cast' => [
+                    ['actor' => 'Bill', 'character' => 'Dave'],
+                    ['actor' => 'Stan', 'character' => 'Josh'],
+                ],
+                'crew' => [
+                    ['department' => 'art', 'job' => 'painter', 'name' => 'Fran'],
+                    ['department' => 'crew', 'job' => 'food', 'name' => 'Zac'],
+                ],
+                'episode' => 2,
+                'firstAired' => new DateTime('2016-01-08'),
+                'plot' => 'New Years party aftermath',
+                'poster' => 'www.newyearsparty.com',
+                'season' => 1,
+                'sources' => [
+                    'Subscription' => [[
+                        'details' => [],
+                        'link' => 'www.netflix.com',
+                        'name' => 'Netflix',
+                        'type' => 'Subscription',
+                    ]],
+                    'Paid' => [[
+                        'details' => ['price' => '19.99'],
+                        'link' => 'www.amazon.com',
+                        'name' => 'Amazon',
+                        'type' => 'Paid',
+                    ]],
+                ],
+                'title' => 'Its party time again',
+            ]],
+            'externalIds' => [
+                ['externalId' => 'asdf8124', 'source' => 'ASDF'],
+                ['externalId' => 'tt12341', 'source' => 'The Movie DB'],
+            ],
+            'genres' => ['Comedy', 'Drama'],
+            'homepage' => 'www.partytime.com',
+            'keywords' => ['fake', 'party'],
+            'languages' => ['English', 'Klingon'],
+            'plot' => 'NYE Party time',
+            'poster' => 'www.movieposter.com',
+            'productionCompanies' => ['Netflix', 'Amazon'],
+            'productionCountries' => ['USA', 'Canada'],
+            'rating' => 'PG-13',
+            'recommendations' => [[
+                'id' => 20,
+                'alternateTitles' => [],
+                'budget' => null,
+                'cast' => [],
+                'collection' => null,
+                'crew' => [],
+                'directors' => [],
+                'episodes' => [],
+                'externalIds' => [],
+                'genres' => [],
+                'homepage' => null,
+                'keywords' => [],
+                'languages' => [],
+                'plot' => null,
+                'poster' => null,
+                'productionCompanies' => [],
+                'productionCountries' => [],
+                'rating' => null,
+                'recommendations' => [],
+                'revenue' => null,
+                'reviews' => [],
+                'runtime' => null,
+                'similarMovies' => [],
+                'sources' => [],
+                'status' => null,
+                'tagline' => null,
+                'title' => 'Ghostbusters',
+                'type' => 'movie',
+                'year' => 2016,
+            ], [
+                'id' => 201,
+                'alternateTitles' => [],
+                'budget' => null,
+                'cast' => [],
+                'collection' => null,
+                'crew' => [],
+                'directors' => [],
+                'episodes' => [],
+                'externalIds' => [],
+                'genres' => [],
+                'homepage' => null,
+                'keywords' => [],
+                'languages' => [],
+                'plot' => null,
+                'poster' => null,
+                'productionCompanies' => [],
+                'productionCountries' => [],
+                'rating' => null,
+                'recommendations' => [],
+                'revenue' => null,
+                'reviews' => [],
+                'runtime' => null,
+                'similarMovies' => [],
+                'sources' => [],
+                'status' => null,
+                'tagline' => null,
+                'title' => 'Dr. Strange',
+                'type' => 'movie',
+                'year' => 2016,
+            ]],
+            'revenue' => 50000000,
+            'reviews' => [
+                ['review' => 'its good', 'author' => 'me', 'link' => 'www.me.com'],
+                ['review' => 'it sucks', 'author' => 'you', 'link' => 'www.you.com'],
+            ],
+            'runtime' => 180,
+            'similarMovies' => [[
+                'id' => 120,
+                'alternateTitles' => [],
+                'budget' => null,
+                'cast' => [],
+                'collection' => null,
+                'crew' => [],
+                'directors' => [],
+                'episodes' => [],
+                'externalIds' => [],
+                'genres' => [],
+                'homepage' => null,
+                'keywords' => [],
+                'languages' => [],
+                'plot' => null,
+                'poster' => null,
+                'productionCompanies' => [],
+                'productionCountries' => [],
+                'rating' => null,
+                'recommendations' => [],
+                'revenue' => null,
+                'reviews' => [],
+                'runtime' => null,
+                'similarMovies' => [],
+                'sources' => [],
+                'status' => null,
+                'tagline' => null,
+                'title' => 'Sing',
+                'type' => 'movie',
+                'year' => 2016,
+            ], [
+                'id' => 21,
+                'alternateTitles' => [],
+                'budget' => null,
+                'cast' => [],
+                'collection' => null,
+                'crew' => [],
+                'directors' => [],
+                'episodes' => [],
+                'externalIds' => [],
+                'genres' => [],
+                'homepage' => null,
+                'keywords' => [],
+                'languages' => [],
+                'plot' => null,
+                'poster' => null,
+                'productionCompanies' => [],
+                'productionCountries' => [],
+                'rating' => null,
+                'recommendations' => [],
+                'revenue' => null,
+                'reviews' => [],
+                'runtime' => null,
+                'similarMovies' => [],
+                'sources' => [],
+                'status' => null,
+                'tagline' => null,
+                'title' => 'Rogue One',
+                'type' => 'movie',
+                'year' => 2016,
+            ]],
+            'sources' => [
+                'Subscription' => [[
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Netflix',
+                    'type' => 'Subscription',
+                ]],
+                'Paid' => [[
+                    'details' => ['price' => '9.99'],
+                    'link' => 'www.amazon.com',
+                    'name' => 'Amazon',
+                    'type' => 'Paid',
+                ]],
+            ],
+            'status' => 'Published',
+            'tagline' => 'Get ready',
+            'title' => 'Its party time',
+            'type' => 'movie',
+            'year' => 2016,
+        ];
+
+        $movie = $this->builder->buildFromMovieInterest($interest);
+
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+        $this->assertEquals($interest, $movie->provideMovieInterest());
     }
 
     public function testBuildWithOmdbNoPoster()

@@ -17,6 +17,47 @@ class EpisodeBuilderTest extends PHPUnit_Framework_TestCase
         $this->builder = new EpisodeBuilder();
     }
 
+    public function testBuildWithEpisodeInterestRendersSameInterest()
+    {
+        $interest = [
+            'id' => 15,
+            'cast' => [
+                ['actor' => 'Joe', 'character' => 'Fred'],
+                ['actor' => 'Bob', 'character' => 'Soloman'],
+            ],
+            'crew' => [
+                ['department' => 'writing', 'job' => 'writer', 'name' => 'Susie'],
+                ['department' => 'directors', 'job' => 'director', 'name' => 'Elliot'],
+            ],
+            'episode' => 1,
+            'firstAired' => new DateTime('2016-01-01'),
+            'plot' => 'New Years party',
+            'poster' => 'www.newyearsparty.com',
+            'season' => 1,
+            'sources' => [
+                'Subscription' => [[
+                    'details' => [],
+                    'link' => 'www.netflix.com',
+                    'name' => 'Netflix',
+                    'type' => 'Subscription',
+                ]],
+                'Paid' => [[
+                    'details' => ['price' => '9.99'],
+                    'link' => 'www.amazon.com',
+                    'name' => 'Amazon',
+                    'type' => 'Paid',
+                ]],
+            ],
+            'title' => 'Its party time',
+        ];
+
+        $episode = $this->builder->buildFromEpisodeInterest($interest);
+
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+        $this->assertEquals($interest, $episode->provideEpisodeInterest());
+    }
+
     public function testBuildWithGuideboxNoSources()
     {
         $data = $this->guideboxEpisode();
