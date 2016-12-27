@@ -263,15 +263,12 @@ class MovieTest extends PHPUnit_Framework_TestCase
 
     public function testAddExternalId()
     {
-        $imdb = new ExternalId('imdb15124', 'imdb');
-        $theMovieDb = new ExternalId('ttmb194810', 'theMovieDB');
-
-        $movie = $this->movie->addExternalId($imdb);
+        $movie = $this->movie->addExternalId('imdb15124', 'imdb');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
 
-        $movie = $this->movie->addExternalId($theMovieDb);
+        $movie = $this->movie->addExternalId('ttmb194810', 'theMovieDB');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
@@ -295,14 +292,12 @@ class MovieTest extends PHPUnit_Framework_TestCase
 
     public function testAddExternalIdDoesntAddDuplicateExternalId()
     {
-        $imdb = new ExternalId('imdb15124', 'imdb');
-
-        $movie = $this->movie->addExternalId($imdb);
+        $movie = $this->movie->addExternalId('imdb15124', 'imdb');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
 
-        $movie = $this->movie->addExternalId($imdb);
+        $movie = $this->movie->addExternalId('imdb15124', 'imdb');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
@@ -560,12 +555,12 @@ class MovieTest extends PHPUnit_Framework_TestCase
         $reviewOne = new Review('Me', 'It rules', 'www.truth.org');
         $reviewTwo = new Review('Idiot', 'It sucks', 'www.moron.com');
 
-        $movie = $this->movie->addReview($reviewOne);
+        $movie = $this->movie->addReview('Me', 'It rules', 'www.truth.org');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
 
-        $movie = $this->movie->addReview($reviewTwo);
+        $movie = $this->movie->addReview('Idiot', 'It sucks', 'www.moron.com');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
@@ -591,12 +586,12 @@ class MovieTest extends PHPUnit_Framework_TestCase
     {
         $reviewOne = new Review('Ivan Reitman', 'reviewOne', 'reviewOnes');
 
-        $movie = $this->movie->addReview($reviewOne);
+        $movie = $this->movie->addReview('Ivan Reitman', 'reviewOne', 'reviewOnes');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
 
-        $movie = $this->movie->addReview($reviewOne);
+        $movie = $this->movie->addReview('Ivan Reitman', 'reviewOne', 'reviewOnes');
 
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);

@@ -6,6 +6,13 @@ use DateTime;
 
 class MovieBuilder
 {
+    protected $episodeBuilder;
+
+    public function __construct()
+    {
+        $this->episodeBuilder = new EpisodeBuilder();
+    }
+
     public function addAlternateTitlesFromTheMovieDB(Movie $movie, array $data)
     {
         foreach ($data as $title) {
@@ -53,7 +60,7 @@ class MovieBuilder
     public function addReviewsFromTheMovieDB(Movie $movie, array $reviews)
     {
         foreach ($reviews as $review) {
-            $movie->addReview(new Review($review['content'], $review['author'], $review['url']));
+            $movie->addReview($review['content'], $review['author'], $review['url']);
         }
 
         return $movie;
@@ -98,7 +105,7 @@ class MovieBuilder
             $year
         );
 
-        $movie->addExternalId(new ExternalId($data['id'], 'Guidebox'));
+        $movie->addExternalId($data['id'], 'Guidebox');
 
         if (!empty($data['alternate_titles'])) {
             foreach ($data['alternate_titles'] as $alternateTitle) {
@@ -164,6 +171,96 @@ class MovieBuilder
         return $movie;
     }
 
+    public function buildFromMovieInterest(array $interest)
+    {
+        $movie = new Movie(
+            $interest['id'],
+            $interest['title'],
+            $interest['type'],
+            $interest['year']
+        );
+
+        foreach ($interest['alternateTitles'] as $alternateTitle) {
+            $movie->addAlternateTitle($alternateTitle);
+        }
+
+        foreach ($interest['cast'] as $cast) {
+            $movie->addCast($cast['actor'], $cast['character']);
+        }
+
+        foreach ($interest['crew'] as $crew) {
+            $movie->addCrew($crew['name'], $crew['job'], $crew['department']);
+        }
+
+        foreach ($interest['directors'] as $director) {
+            $movie->addDirector($director);
+        }
+
+        foreach ($interest['episodes'] as $episode) {
+            $movie->addEpisode($this->episodeBuilder->buildFromEpisodeInterest($episode));
+        }
+
+        foreach ($interest['externalIds'] as $externalId) {
+            $movie->addExternalId($externalId['externalId'], $externalId['source']);
+        }
+
+        foreach ($interest['genres'] as $genre) {
+            $movie->addGenre($genre);
+        }
+
+        foreach ($interest['keywords'] as $keyword) {
+            $movie->addKeyword($keyword);
+        }
+
+        foreach ($interest['languages'] as $language) {
+            $movie->addLanguage($language);
+        }
+
+        foreach ($interest['productionCompanies'] as $productionCompany) {
+            $movie->addProductionCompany($productionCompany);
+        }
+
+        foreach ($interest['productionCountries'] as $productionCountry) {
+            $movie->addProductionCountry($productionCountry);
+        }
+
+        foreach ($interest['recommendations'] as $recommendation) {
+            $movie->addRecommendation($this->buildFromMovieInterest($recommendation));
+        }
+
+        foreach ($interest['reviews'] as $review) {
+            $movie->addReview($review['review'], $review['author'], $review['link']);
+        }
+
+        foreach ($interest['similarMovies'] as $similarMovie) {
+            $movie->addSimilarMovie($this->buildFromMovieInterest($similarMovie));
+        }
+
+        foreach ($interest['sources'] as $type => $sources) {
+            foreach ($sources as $source) {
+                $movie->addSource(
+                    $type,
+                    $source['name'],
+                    $source['link'],
+                    $source['details']
+                );
+            }
+        }
+
+        $movie->setBudget($interest['budget']);
+        $movie->setCollection($interest['collection']);
+        $movie->setHomepage($interest['homepage']);
+        $movie->setPlot($interest['plot']);
+        $movie->setPoster($interest['poster']);
+        $movie->setRating($interest['rating']);
+        $movie->setRevenue($interest['revenue']);
+        $movie->setRuntime($interest['runtime']);
+        $movie->setStatus($interest['status']);
+        $movie->setTagline($interest['tagline']);
+
+        return $movie;
+    }
+
     public function buildFromNetflix(array $data)
     {
         $movie = new Movie(
@@ -174,14 +271,14 @@ class MovieBuilder
         );
         $movie->setPoster($data['poster']);
         $movie->setPlot($data['summary']);
-        $movie->addExternalId(new ExternalId($data['show_id'], 'Netflix'));
+        $movie->addExternalId($data['show_id'], 'Netflix');
         return $movie;
     }
 
     public function buildFromOmdb(array $data)
     {
         $movie = new Movie($data['imdbID'], $data['Title'], $data['Type'], $data['Year']);
-        $movie->addExternalId(new ExternalId($data['imdbID'], 'OMDB'));
+        $movie->addExternalId($data['imdbID'], 'OMDB');
 
         if (!empty($data['Poster']) && $data['Poster'] != 'N/A') {
             $movie->setPoster($data['Poster']);
@@ -204,7 +301,7 @@ class MovieBuilder
             $type,
             $releaseDate->format('Y')
         );
-        $movie->addExternalId(new ExternalId($data['id'], 'The Movie DB'));
+        $movie->addExternalId($data['id'], 'The Movie DB');
 
         if (!empty($data['original_title'])) {
             $movie->addAlternateTitle($data['original_title']);
@@ -235,7 +332,7 @@ class MovieBuilder
         }
 
         if (!empty($data['imdb_id'])) {
-            $movie->addExternalId(new ExternalId($data['imdb_id'], 'IMDB'));
+            $movie->addExternalId($data['imdb_id'], 'IMDB');
         }
 
         if (!empty($data['original_language'])) {

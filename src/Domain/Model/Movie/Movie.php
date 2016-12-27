@@ -117,18 +117,17 @@ class Movie
         return $this;
     }
 
-    public function addExternalId(ExternalId $externalId)
+    public function addExternalId($id, $source)
     {
-        $interest = $externalId->provideExternalIdInterest();
+        foreach ($this->externalIds as $externalId) {
+            $interest = $externalId->provideExternalIdInterest();
 
-        foreach ($this->externalIds as $existingExternalId) {
-            $existingExternalIdInterest = $existingExternalId->provideExternalIdInterest();
-
-            if ($existingExternalIdInterest == $interest) {
+            if ($interest['externalId'] == $id && $interest['source'] == $source) {
                 return $this;
             }
         }
 
+        $externalId = new ExternalId($id, $source);
         $this->externalIds[] = $externalId;
 
         return $this;
@@ -191,18 +190,20 @@ class Movie
         return $this;
     }
 
-    public function addReview(Review $review)
+    public function addReview($review, $author, $link)
     {
-        $interest = $review->provideReviewInterest();
-
         foreach ($this->reviews as $existingReview) {
-            $existingReviewInterest = $existingReview->provideReviewInterest();
+            $interest = $existingReview->provideReviewInterest();
 
-            if ($existingReviewInterest['review'] == $interest['review']) {
+            if ($interest['review'] == $review
+                && $interest['author'] == $author
+                && $interest['link'] == $link
+            ) {
                 return $this;
             }
         }
 
+        $review = new Review($review, $author, $link);
         $this->reviews[] = $review;
         return $this;
     }
