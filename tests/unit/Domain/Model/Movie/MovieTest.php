@@ -944,6 +944,13 @@ class MovieTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 
+    public function testSetTitle()
+    {
+        $this->movie->setTitle('Ghostbusters');
+        $expected = array_merge($this->expected, ['title' => 'Ghostbusters']);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
     public function testTitle()
     {
         $this->assertEquals('Guardians of the Galaxy', $this->movie->title());
