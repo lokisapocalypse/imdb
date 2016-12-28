@@ -220,7 +220,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     public function testBuildWithGuideboxWithAlternateTitles()
     {
         $data = array_merge($this->guideBoxMovie(), ['alternate_titles' => ['Guardianes de la Galaxia', 'guardians qIb']]);
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -228,47 +228,11 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(['Guardianes de la Galaxia', 'guardians qIb'], $interest['alternateTitles']);
     }
 
-    public function testBuildWithGuideboxIsMovieWithNoTVrageId()
-    {
-        $data = array_merge($this->guideBoxMovie(), ['tvrage' => ['tvrage_id' => null]]);
-
-        $movie = $this->builder->buildFromGuidebox($data);
-
-        $this->assertInstanceOf(Movie::class, $movie);
-
-        $interest = $movie->provideMovieInterest();
-        $this->assertEquals('movie', $interest['type']);
-    }
-
-    public function testBuildWithGuideboxIsAMovieWithFlag()
-    {
-        $data = array_merge($this->guideBoxMovie(), ['isMovie' => 1]);
-
-        $movie = $this->builder->buildFromGuidebox($data);
-
-        $this->assertInstanceOf(Movie::class, $movie);
-
-        $interest = $movie->provideMovieInterest();
-        $this->assertEquals('movie', $interest['type']);
-    }
-
-    public function testBuildWithGuideboxIsATvShow()
-    {
-        $data = array_merge($this->guideBoxMovie(), ['tvrage' => ['tvrage_id' => 15]]);
-
-        $movie = $this->builder->buildFromGuidebox($data);
-
-        $this->assertInstanceOf(Movie::class, $movie);
-
-        $interest = $movie->provideMovieInterest();
-        $this->assertEquals('tvshow', $interest['type']);
-    }
-
     public function testBuildWithGuideboxFirstAiredSet()
     {
         $data = array_merge($this->guideBoxMovie(), ['first_aired' => '2014-05-26', 'release_year' => null, 'release_date' => '2015-05-26']);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -280,7 +244,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['first_aired' => '2014-05-26', 'release_year' => 2013, 'release_date' => '2015-05-26']);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -292,7 +256,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['first_aired' => null, 'release_year' => null, 'release_date' => '2015-05-26']);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -304,7 +268,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['themoviedb' => 620]);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -326,7 +290,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['imdb' => 'tt0087332']);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -348,7 +312,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['rottentomatoes' => 12000]);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -370,7 +334,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['wikipedia_id' => 205012]);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -392,7 +356,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['artwork_208x117' => 'my poster', 'poster_120x171' => null]);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -404,7 +368,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['overview' => 'Superheros save the world']);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -420,7 +384,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         ];
         $data = array_merge($this->guideBoxMovie(), ['cast' => $cast]);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
         $this->assertInstanceOf(Movie::class, $movie);
 
         $interest = $movie->provideMovieInterest();
@@ -438,7 +402,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $directors = [['name' => 'James Gunn'], ['name' => 'Stan Lee']];
         $data = array_merge($this->guideBoxMovie(), ['directors' => $directors]);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
         $this->assertInstanceOf(Movie::class, $movie);
 
         $interest = $movie->provideMovieInterest();
@@ -448,7 +412,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     public function testBuildWithGuideboxSetRating()
     {
         $data = array_merge($this->guideBoxMovie(), ['rating' => 'PG-13']);
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
         $this->assertInstanceOf(Movie::class, $movie);
 
         $interest = $movie->provideMovieInterest();
@@ -459,7 +423,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['free_web_sources' => [['display_name' => 'Netflix', 'link' => 'www.netflix.com']]]);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -471,7 +435,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['tv_everywhere_web_sources' => [['display_name' => 'Netflix', 'link' => 'www.netflix.com']]]);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -483,7 +447,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['subscription_web_sources' => [['display_name' => 'Netflix', 'link' => 'www.netflix.com']]]);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 
@@ -495,7 +459,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $data = array_merge($this->guideBoxMovie(), ['purchase_web_sources' => [['display_name' => 'Netflix', 'link' => 'www.netflix.com']]]);
 
-        $movie = $this->builder->buildFromGuidebox($data);
+        $movie = $this->builder->buildFromGuidebox($data, 'movie');
 
         $this->assertInstanceOf(Movie::class, $movie);
 

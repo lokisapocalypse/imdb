@@ -45,7 +45,7 @@ class MovieRepository implements Movie\MovieRepository
         $result = $this->adapter->get($url, []);
 
         foreach ($result['results'] as $data) {
-            $movies[] = $this->movieBuilder->buildFromGuidebox($data);
+            $movies[] = $this->movieBuilder->buildFromGuidebox($data, $type);
         }
 
         return $movies;
@@ -91,7 +91,7 @@ class MovieRepository implements Movie\MovieRepository
 
         if (!empty($result['results'])) {
             foreach ($result['results'] as $movie) {
-                $movies[] = $this->movieBuilder->buildFromGuidebox($movie);
+                $movies[] = $this->movieBuilder->buildFromGuidebox($movie, $this->type);
             }
         }
 
@@ -112,7 +112,7 @@ class MovieRepository implements Movie\MovieRepository
         $result = $this->adapter->get($url, []);
 
         foreach ($result['results'] as $movie) {
-            $movies[] = $this->movieBuilder->buildFromGuidebox($movie);
+            $movies[] = $this->movieBuilder->buildFromGuidebox($movie, $this->type);
         }
 
         return $movies;
@@ -128,7 +128,7 @@ class MovieRepository implements Movie\MovieRepository
             throw new Movie\NotFoundException('No movie was found.');
         }
 
-        return $this->movieBuilder->buildFromGuidebox($result);
+        return $this->movieBuilder->buildFromGuidebox($result, $this->type);
     }
 
     public function oneOfTitle($title, $year = null)
@@ -145,17 +145,17 @@ class MovieRepository implements Movie\MovieRepository
         $result = $this->adapter->get($url, []);
 
         if (empty($year) && !empty($result['results'])) {
-            return $this->movieBuilder->buildFromGuidebox($result['results'][0]);
+            return $this->movieBuilder->buildFromGuidebox($result['results'][0], $this->type);
         }
 
         foreach ($result['results'] as $movie) {
             if (!empty($movie['release_year']) && $movie['release_year'] == $year) {
-                return $this->movieBuilder->buildFromGuidebox($movie);
+                return $this->movieBuilder->buildFromGuidebox($movie, $this->type);
             } elseif (!empty($movie['first_aired'])) {
                 $firstAired = new DateTime($movie['first_aired']);
 
                 if ($firstAired->format('Y') == $year) {
-                    return $this->movieBuilder->buildFromGuidebox($movie);
+                    return $this->movieBuilder->buildFromGuidebox($movie, $this->type);
                 }
             }
         }

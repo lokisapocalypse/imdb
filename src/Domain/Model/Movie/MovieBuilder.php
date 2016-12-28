@@ -75,17 +75,8 @@ class MovieBuilder
         return $movie;
     }
 
-    public function buildFromGuidebox(array $data)
+    public function buildFromGuidebox(array $data, $type)
     {
-        $movie = false;
-
-        // several ways this can be a movie
-        if (!empty($data['isMovie'])) {
-            $movie = true;
-        } elseif (empty($data['tvrage']['tvrage_id'])) {
-            $movie = true;
-        }
-
         $year = null;
 
         if (!empty($data['release_year'])) {
@@ -101,7 +92,7 @@ class MovieBuilder
         $movie = new Movie(
             $data['id'],
             $data['title'],
-            $movie ? 'movie' : 'tvshow',
+            $type,
             $year
         );
 
