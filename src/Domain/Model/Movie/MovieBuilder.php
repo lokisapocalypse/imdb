@@ -105,6 +105,22 @@ class MovieBuilder
             $year
         );
 
+        if (!empty($data['themoviedb'])) {
+            $movie->addExternalId($data['themoviedb'], 'The Movie DB');
+        }
+
+        if (!empty($data['imdb'])) {
+            $movie->addExternalId($data['imdb'], 'IMDB');
+        }
+
+        if (!empty($data['rottentomatoes'])) {
+            $movie->addExternalId($data['rottentomatoes'], 'Rotten Tomatoes');
+        }
+
+        if (!empty($data['wikipedia_id'])) {
+            $movie->addExternalId($data['wikipedia_id'], 'Wikipedia');
+        }
+
         $movie->addExternalId($data['id'], 'Guidebox');
 
         if (!empty($data['alternate_titles'])) {

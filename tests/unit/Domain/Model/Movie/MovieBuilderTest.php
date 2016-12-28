@@ -300,6 +300,94 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2015, $interest['year']);
     }
 
+    public function testBuildWithGuideboxTheMovieDbId()
+    {
+        $data = array_merge($this->guideBoxMovie(), ['themoviedb' => 620]);
+
+        $movie = $this->builder->buildFromGuidebox($data);
+
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+
+        $found = false;
+        foreach ($movie->provideMovieInterest()['externalIds'] as $externalId) {
+            if ($externalId['source'] == 'The Movie DB') {
+                $found = true;
+                $this->assertEquals(620, $externalId['externalId']);
+                break;
+            }
+        }
+
+        $this->assertTrue($found);
+    }
+
+    public function testBuildWithGuideboxHasImdbId()
+    {
+        $data = array_merge($this->guideBoxMovie(), ['imdb' => 'tt0087332']);
+
+        $movie = $this->builder->buildFromGuidebox($data);
+
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+
+        $found = false;
+        foreach ($movie->provideMovieInterest()['externalIds'] as $externalId) {
+            if ($externalId['source'] == 'IMDB') {
+                $found = true;
+                $this->assertEquals('tt0087332', $externalId['externalId']);
+                break;
+            }
+        }
+
+        $this->assertTrue($found);
+    }
+
+    public function testBuildWithGuideboxHasRottenTomatoesId()
+    {
+        $data = array_merge($this->guideBoxMovie(), ['rottentomatoes' => 12000]);
+
+        $movie = $this->builder->buildFromGuidebox($data);
+
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+
+        $found = false;
+        foreach ($movie->provideMovieInterest()['externalIds'] as $externalId) {
+            if ($externalId['source'] == 'Rotten Tomatoes') {
+                $found = true;
+                $this->assertEquals(12000, $externalId['externalId']);
+                break;
+            }
+        }
+
+        $this->assertTrue($found);
+    }
+
+    public function testBuildWithGuideboxHasWikipediaId()
+    {
+        $data = array_merge($this->guideBoxMovie(), ['wikipedia_id' => 205012]);
+
+        $movie = $this->builder->buildFromGuidebox($data);
+
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $interest = $movie->provideMovieInterest();
+
+        $found = false;
+        foreach ($movie->provideMovieInterest()['externalIds'] as $externalId) {
+            if ($externalId['source'] == 'Wikipedia') {
+                $found = true;
+                $this->assertEquals(205012, $externalId['externalId']);
+                break;
+            }
+        }
+
+        $this->assertTrue($found);
+    }
+
     public function testBuildWithGuideboxWithArtwork()
     {
         $data = array_merge($this->guideBoxMovie(), ['artwork_208x117' => 'my poster', 'poster_120x171' => null]);
