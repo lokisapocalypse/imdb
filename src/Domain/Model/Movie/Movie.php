@@ -483,6 +483,11 @@ class Movie
         $this->tagline = $tagline;
     }
 
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
     public function title()
     {
         return $this->title;
