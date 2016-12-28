@@ -951,6 +951,20 @@ class MovieTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 
+    public function testSetType()
+    {
+        $this->movie->setType('best movie ever');
+        $expected = array_merge($this->expected, ['type' => 'best movie ever']);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testSetYear()
+    {
+        $this->movie->setYear(2016);
+        $expected = array_merge($this->expected, ['year' => 2016]);
+        $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
     public function testTitle()
     {
         $this->assertEquals('Guardians of the Galaxy', $this->movie->title());

@@ -488,6 +488,16 @@ class Movie
         $this->title = $title;
     }
 
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    public function setYear($year)
+    {
+        $this->year = $year;
+    }
+
     public function title()
     {
         return $this->title;
