@@ -125,9 +125,9 @@ class MovieBuilder
         }
 
         if (!empty($data['poster_120x171'])) {
-            $movie->setPoster($data['poster_120x171']);
+            $movie->addPoster($data['poster_120x171'], 'poster', '120x171');
         } elseif (!empty($data['artwork_208x117'])) {
-            $movie->setPoster($data['artwork_208x117']);
+            $movie->addPoster($data['artwork_208x117'], 'poster', '208x117');
         }
 
         if (!empty($data['rating'])) {
@@ -223,6 +223,10 @@ class MovieBuilder
             $movie->addLanguage($language);
         }
 
+        foreach ($interest['posters'] as $poster) {
+            $movie->addPoster($poster['link'], $poster['type'], $poster['size']);
+        }
+
         foreach ($interest['productionCompanies'] as $productionCompany) {
             $movie->addProductionCompany($productionCompany);
         }
@@ -258,7 +262,6 @@ class MovieBuilder
         $movie->setCollection($interest['collection']);
         $movie->setHomepage($interest['homepage']);
         $movie->setPlot($interest['plot']);
-        $movie->setPoster($interest['poster']);
         $movie->setRating($interest['rating']);
         $movie->setRevenue($interest['revenue']);
         $movie->setRuntime($interest['runtime']);
@@ -276,7 +279,7 @@ class MovieBuilder
             $data['mediatype'] == 0 ? 'movie' : 'tvshow',
             $data['release_year']
         );
-        $movie->setPoster($data['poster']);
+        $movie->addPoster($data['poster'], 'poster');
         $movie->setPlot($data['summary']);
         $movie->addExternalId($data['show_id'], 'Netflix');
         return $movie;
@@ -288,7 +291,7 @@ class MovieBuilder
         $movie->addExternalId($data['imdbID'], 'OMDB');
 
         if (!empty($data['Poster']) && $data['Poster'] != 'N/A') {
-            $movie->setPoster($data['Poster']);
+            $movie->addPoster($data['Poster'], 'poster');
         }
 
         if (!empty($data['Plot'])) {

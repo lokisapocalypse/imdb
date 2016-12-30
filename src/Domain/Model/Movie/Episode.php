@@ -10,7 +10,7 @@ class Episode
     protected $episode;
     protected $firstAired;
     protected $plot;
-    protected $poster;
+    protected $posters;
     protected $season;
     protected $sources;
     protected $title;
@@ -22,6 +22,7 @@ class Episode
         $this->episode = $episode;
         $this->firstAired = $firstAired;
         $this->id = $id;
+        $this->posters = [];
         $this->season = $season;
         $this->sources = [];
         $this->title = $title;
@@ -56,6 +57,20 @@ class Episode
         }
 
         $this->crew[] = new Crew($name, $job, $department);
+        return $this;
+    }
+
+    public function addPoster($link, $type, $size = '')
+    {
+        $poster = new Poster($link, $type, $size);
+
+        foreach ($this->posters as $existingPoster) {
+            if ($existingPoster->identity() == $poster->identity()) {
+                return $this;
+            }
+        }
+
+        $this->posters[] = $poster;
         return $this;
     }
 
@@ -99,6 +114,10 @@ class Episode
             return $c->provideCrewInterest();
         }, $this->crew);
 
+        $posters = array_map(function ($p) {
+            return $p->providePosterInterest();
+        }, $this->posters);
+
         return [
             'id' => $this->id,
             'cast' => $cast,
@@ -106,7 +125,7 @@ class Episode
             'episode' => $this->episode,
             'firstAired' => $this->firstAired,
             'plot' => $this->plot,
-            'poster' => $this->poster,
+            'posters' => $posters,
             'season' => $this->season,
             'sources' => $sources,
             'title' => $this->title,
@@ -116,11 +135,6 @@ class Episode
     public function setPlot($plot)
     {
         $this->plot = $plot;
-    }
-
-    public function setPoster($poster)
-    {
-        $this->poster = $poster;
     }
 
     public function title()

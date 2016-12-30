@@ -17,7 +17,6 @@ class EpisodeBuilder
         );
 
         $episode->setPlot($interest['plot']);
-        $episode->setPoster($interest['poster']);
 
         foreach ($interest['cast'] as $cast) {
             $episode->addCast($cast['actor'], $cast['character']);
@@ -25,6 +24,10 @@ class EpisodeBuilder
 
         foreach ($interest['crew'] as $crew) {
             $episode->addCrew($crew['name'], $crew['job'], $crew['department']);
+        }
+
+        foreach ($interest['posters'] as $poster) {
+            $episode->addPoster($poster['link'], $poster['type'], $poster['size']);
         }
 
         foreach ($interest['sources'] as $type => $sources) {
@@ -51,7 +54,7 @@ class EpisodeBuilder
             $details['episode_number']
         );
         $episode->setPlot($details['overview']);
-        $episode->setPoster($details['thumbnail_208x117']);
+        $episode->addPoster($details['thumbnail_208x117'], 'poster', '208x117');
 
         $sources = [];
 

@@ -32,7 +32,11 @@ class EpisodeBuilderTest extends PHPUnit_Framework_TestCase
             'episode' => 1,
             'firstAired' => new DateTime('2016-01-01'),
             'plot' => 'New Years party',
-            'poster' => 'www.newyearsparty.com',
+            'posters' => [[
+                'link' => 'www.newyearsparty.com',
+                'type' => 'poster',
+                'size' => '208x117',
+            ]],
             'season' => 1,
             'sources' => [
                 'Subscription' => [[
@@ -125,7 +129,7 @@ class EpisodeBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);
 
-        $expected = array_merge($this->expected(), ['poster' => null, 'firstAired' => '2014-05-28']);
+        $expected = array_merge($this->expected(), ['posters' => [], 'firstAired' => '2014-05-28']);
 
         $this->assertEquals($expected, $episode->provideEpisodeInterest());
     }
@@ -177,7 +181,11 @@ class EpisodeBuilderTest extends PHPUnit_Framework_TestCase
             'episode' => 1,
             'firstAired' => new DateTime('2014-05-28'),
             'plot' => 'Superheroes save the day',
-            'poster' => 'www.movieposters.com',
+            'posters' => [[
+                'link' => 'www.movieposters.com',
+                'type' => 'poster',
+                'size' => '208x117',
+            ]],
             'season' => 1,
             'sources' => [],
             'title' => 'Guardians of the Galaxy',

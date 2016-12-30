@@ -361,7 +361,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Movie::class, $movie);
 
         $interest = $movie->provideMovieInterest();
-        $this->assertEquals('my poster', $interest['poster']);
+        $this->assertNotEquals([], $interest['posters']);
     }
 
     public function testBuildWithGuideboxSetPlot()
@@ -496,7 +496,15 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
                 'episode' => 1,
                 'firstAired' => new DateTime('2016-01-01'),
                 'plot' => 'New Years party',
-                'poster' => 'www.newyearsparty.com',
+                'posters' => [[
+                    'link' => 'www.newyearsparty.com',
+                    'type' => 'poster',
+                    'size' => '120x191',
+                ], [
+                    'link' => 'www.newyearsbanner.com',
+                    'type' => 'banner',
+                    'size' => '720x300',
+                ]],
                 'season' => 1,
                 'sources' => [
                     'Subscription' => [[
@@ -526,7 +534,15 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
                 'episode' => 2,
                 'firstAired' => new DateTime('2016-01-08'),
                 'plot' => 'New Years party aftermath',
-                'poster' => 'www.newyearsparty.com',
+                'posters' => [[
+                    'link' => 'www.newyearsparty.com',
+                    'type' => 'poster',
+                    'size' => '120x171',
+                ], [
+                    'link' => 'www.newyearspartybanner.com',
+                    'type' => 'banner',
+                    'size' => '700x300',
+                ]],
                 'season' => 1,
                 'sources' => [
                     'Subscription' => [[
@@ -553,7 +569,15 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'keywords' => ['fake', 'party'],
             'languages' => ['English', 'Klingon'],
             'plot' => 'NYE Party time',
-            'poster' => 'www.movieposter.com',
+            'posters' => [[
+                'link' => 'www.movieposter.com',
+                'type' => 'poster',
+                'size' => '120x120',
+            ], [
+                'link' => 'www.othermovieposter.com',
+                'type' => 'banner',
+                'size' => '720x300',
+            ]],
             'productionCompanies' => ['Netflix', 'Amazon'],
             'productionCountries' => ['USA', 'Canada'],
             'rating' => 'PG-13',
@@ -572,7 +596,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
                 'keywords' => [],
                 'languages' => [],
                 'plot' => null,
-                'poster' => null,
+                'posters' => [],
                 'productionCompanies' => [],
                 'productionCountries' => [],
                 'rating' => null,
@@ -602,7 +626,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
                 'keywords' => [],
                 'languages' => [],
                 'plot' => null,
-                'poster' => null,
+                'posters' => [],
                 'productionCompanies' => [],
                 'productionCountries' => [],
                 'rating' => null,
@@ -639,7 +663,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
                 'keywords' => [],
                 'languages' => [],
                 'plot' => null,
-                'poster' => null,
+                'posters' => [],
                 'productionCompanies' => [],
                 'productionCountries' => [],
                 'rating' => null,
@@ -669,7 +693,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
                 'keywords' => [],
                 'languages' => [],
                 'plot' => null,
-                'poster' => null,
+                'posters' => [],
                 'productionCompanies' => [],
                 'productionCountries' => [],
                 'rating' => null,
@@ -724,7 +748,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'imdbID' => 1234,
         ];
 
-        $expected = array_merge($this->expected('OMDB'), ['poster' => null]);
+        $expected = array_merge($this->expected('OMDB'), ['posters' => []]);
 
         $movie = $this->builder->buildFromOmdb($data);
 
@@ -776,7 +800,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
     {
         $movie = $this->builder->buildFromTheMovieDB($this->theMovieDB(), 'movie');
 
-        $expected = array_merge($this->expected('The Movie DB'), ['poster' => null]);
+        $expected = array_merge($this->expected('The Movie DB'), ['posters' => []]);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $movie->provideMovieInterest());
@@ -787,7 +811,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $data = array_merge($this->theMovieDB(), ['release_date' => null, 'first_air_date' => '2014-05-28']);
         $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
 
-        $expected = array_merge($this->expected('The Movie DB'), ['poster' => null]);
+        $expected = array_merge($this->expected('The Movie DB'), ['posters' => []]);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $movie->provideMovieInterest());
@@ -798,7 +822,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $data = array_merge($this->theMovieDB(), ['title' => null, 'original_name' => 'Guardians of the Galaxy']);
         $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
 
-        $expected = array_merge($this->expected('The Movie DB'), ['poster' => null]);
+        $expected = array_merge($this->expected('The Movie DB'), ['posters' => []]);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $movie->provideMovieInterest());
@@ -809,7 +833,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $data = array_merge($this->theMovieDB(), ['original_title' => 'The Guardians of the Galaxy']);
         $movie = $this->builder->buildFromTheMovieDB($data, 'movie');
 
-        $expected = array_merge($this->expected('The Movie DB'), ['poster' => null, 'alternateTitles' => ['The Guardians of the Galaxy']]);
+        $expected = array_merge($this->expected('The Movie DB'), ['alternateTitles' => ['The Guardians of the Galaxy'], 'posters' => []]);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $movie->provideMovieInterest());
@@ -986,7 +1010,11 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'keywords' => [],
             'languages' => [],
             'plot' => 'Superheros save the galaxy',
-            'poster' => 'www.movieposters.com/guardians-of-the-galaxy',
+            'posters' => [[
+                'link' => 'www.movieposters.com/guardians-of-the-galaxy',
+                'size' => null,
+                'type' => 'poster',
+            ]],
             'productionCompanies' => [],
             'productionCountries' => [],
             'rating' => null,
@@ -1000,7 +1028,7 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'tagline' => null,
             'title' => 'Guardians of the Galaxy',
             'type' => 'movie',
-            'year' => 2014,
+            'year' => '2014',
         ];
 
         $externalId = 0;

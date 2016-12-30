@@ -21,7 +21,7 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
             'firstAired' => '2014-05-28',
             'season' => 1,
             'sources' => [],
-            'poster' => null,
+            'posters' => [],
             'plot' => null,
             'crew' => [],
             'cast' => [],
@@ -130,6 +130,41 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
         ];
 
         $this->assertEquals($expected, $interest['crew']);
+    }
+
+    public function testAddPosterWithNoPosters()
+    {
+        $episode = $this->episode->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $episode = $this->episode->addPoster('www.ghostbusters.com/banner', 'banner', '700x380');
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $expected = [
+            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'size' => '208x117'],
+            ['link' => 'www.ghostbusters.com/banner', 'type' => 'banner', 'size' => '700x380'],
+        ];
+
+        $this->assertEquals($expected, $episode->provideEpisodeInterest()['posters']);
+    }
+
+    public function testAddDuplicatePoster()
+    {
+        $episode = $this->episode->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $episode = $this->episode->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $this->assertNotNull($episode);
+        $this->assertInstanceOf(Episode::class, $episode);
+
+        $expected = [
+            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'size' => '208x117'],
+        ];
+
+        $this->assertEquals($expected, $episode->provideEpisodeInterest()['posters']);
     }
 
     public function testAddSourceWithNoSources()
@@ -282,13 +317,6 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
     public function testProvideInterestSimpleObject()
     {
         $this->assertEquals($this->expected, $this->episode->provideEpisodeInterest());
-    }
-
-    public function testSetPoster()
-    {
-        $this->episode->setPoster('www.episodeposters.com/guardians-of-the-galaxy');
-        $expected = array_merge($this->expected, ['poster' => 'www.episodeposters.com/guardians-of-the-galaxy']);
-        $this->assertEquals($expected, $this->episode->provideEpisodeInterest());
     }
 
     public function testSetPlot()

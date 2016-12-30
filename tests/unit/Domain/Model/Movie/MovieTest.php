@@ -29,7 +29,7 @@ class MovieTest extends PHPUnit_Framework_TestCase
             'keywords' => [],
             'languages' => [],
             'plot' => null,
-            'poster' => null,
+            'posters' => [],
             'productionCompanies' => [],
             'productionCountries' => [],
             'rating' => null,
@@ -418,6 +418,43 @@ class MovieTest extends PHPUnit_Framework_TestCase
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
         $this->assertEquals($expected, $this->movie->provideMovieInterest());
+    }
+
+    public function testAddPosterWithNoPosters()
+    {
+        $movie = $this->movie->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addPoster('www.ghostbusters.com/banner', 'banner', '700x380');
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = [
+            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'size' => '208x117'],
+            ['link' => 'www.ghostbusters.com/banner', 'type' => 'banner', 'size' => '700x380'],
+        ];
+
+        $this->assertEquals($expected, $movie->provideMovieInterest()['posters']);
+        $this->assertEquals($expected, $movie->provideMovieWithSourcesConsolidatedInterest()['posters']);
+    }
+
+    public function testAddDuplicatePoster()
+    {
+        $movie = $this->movie->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $movie = $this->movie->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $this->assertNotNull($movie);
+        $this->assertInstanceOf(Movie::class, $movie);
+
+        $expected = [
+            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'size' => '208x117'],
+        ];
+
+        $this->assertEquals($expected, $movie->provideMovieInterest()['posters']);
+        $this->assertEquals($expected, $movie->provideMovieWithSourcesConsolidatedInterest()['posters']);
     }
 
     public function testAddProductionCompany()
@@ -894,13 +931,6 @@ class MovieTest extends PHPUnit_Framework_TestCase
     {
         $this->movie->setHomepage('www.gotg.com');
         $this->assertEquals('www.gotg.com', $this->movie->provideMovieInterest()['homepage']);
-    }
-
-    public function testSetPoster()
-    {
-        $this->movie->setPoster('www.movieposters.com/guardians-of-the-galaxy');
-        $expected = array_merge($this->expected, ['poster' => 'www.movieposters.com/guardians-of-the-galaxy']);
-        $this->assertEquals($expected, $this->movie->provideMovieInterest());
     }
 
     public function testSetPlot()
