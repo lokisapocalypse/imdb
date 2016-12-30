@@ -18,7 +18,7 @@ class Movie
     protected $keywords;
     protected $languages;
     protected $plot;
-    protected $poster;
+    protected $posters;
     protected $productionCompanies;
     protected $productionCountries;
     protected $rating;
@@ -46,6 +46,7 @@ class Movie
         $this->genres = [];
         $this->keywords = [];
         $this->languages = [];
+        $this->posters = [];
         $this->productionCompanies = [];
         $this->productionCountries = [];
         $this->recommendations = [];
@@ -157,6 +158,20 @@ class Movie
             $this->languages[] = $language;
         }
 
+        return $this;
+    }
+
+    public function addPoster($link, $type, $size = '')
+    {
+        $poster = new Poster($link, $type, $size);
+
+        foreach ($this->posters as $existingPoster) {
+            if ($existingPoster->identity() == $poster->identity()) {
+                return $this;
+            }
+        }
+
+        $this->posters[] = $poster;
         return $this;
     }
 
@@ -288,6 +303,10 @@ class Movie
             return $e->provideExternalIdInterest();
         }, $this->externalIds);
 
+        $posters = array_map(function ($p) {
+            return $p->providePosterInterest();
+        }, $this->posters);
+
         $recommendations = array_map(function ($r) {
             return $r->provideMovieInterest();
         }, $this->recommendations);
@@ -315,7 +334,7 @@ class Movie
             'keywords' => $this->keywords,
             'languages' => $this->languages,
             'plot' => $this->plot,
-            'poster' => $this->poster,
+            'posters' => $posters,
             'productionCompanies' => $this->productionCompanies,
             'productionCountries' => $this->productionCountries,
             'rating' => $this->rating,
@@ -388,6 +407,10 @@ class Movie
             return $e->provideExternalIdInterest();
         }, $this->externalIds);
 
+        $posters = array_map(function ($p) {
+            return $p->providePosterInterest();
+        }, $this->posters);
+
         $recommendations = array_map(function ($r) {
             return $r->provideMovieInterest();
         }, $this->recommendations);
@@ -415,7 +438,7 @@ class Movie
             'keywords' => $this->keywords,
             'languages' => $this->languages,
             'plot' => $this->plot,
-            'poster' => $this->poster,
+            'posters' => $posters,
             'productionCompanies' => $this->productionCompanies,
             'productionCountries' => $this->productionCountries,
             'rating' => $this->rating,
@@ -451,11 +474,6 @@ class Movie
     public function setPlot($plot)
     {
         $this->plot = $plot;
-    }
-
-    public function setPoster($poster)
-    {
-        $this->poster = $poster;
     }
 
     public function setRating($rating)
