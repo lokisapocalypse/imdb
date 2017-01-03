@@ -499,11 +499,13 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
                 'posters' => [[
                     'link' => 'www.newyearsparty.com',
                     'type' => 'poster',
-                    'size' => '120x191',
+                    'width' => 191,
+                    'height' => 120,
                 ], [
                     'link' => 'www.newyearsbanner.com',
                     'type' => 'banner',
-                    'size' => '720x300',
+                    'width' => 300,
+                    'height' => 720,
                 ]],
                 'season' => 1,
                 'sources' => [
@@ -537,11 +539,13 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
                 'posters' => [[
                     'link' => 'www.newyearsparty.com',
                     'type' => 'poster',
-                    'size' => '120x171',
+                    'width' => 171,
+                    'height' => 120,
                 ], [
                     'link' => 'www.newyearspartybanner.com',
                     'type' => 'banner',
-                    'size' => '700x300',
+                    'width' => 300,
+                    'height' => 700,
                 ]],
                 'season' => 1,
                 'sources' => [
@@ -572,11 +576,13 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'posters' => [[
                 'link' => 'www.movieposter.com',
                 'type' => 'poster',
-                'size' => '120x120',
+                'width' => 120,
+                'height' => 120,
             ], [
                 'link' => 'www.othermovieposter.com',
                 'type' => 'banner',
-                'size' => '720x300',
+                'width' => 300,
+                'height' => 720,
             ]],
             'productionCompanies' => ['Netflix', 'Amazon'],
             'productionCountries' => ['USA', 'Canada'],
@@ -1011,9 +1017,10 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             'languages' => [],
             'plot' => 'Superheros save the galaxy',
             'posters' => [[
+                'height' => 0,
                 'link' => 'www.movieposters.com/guardians-of-the-galaxy',
-                'size' => null,
                 'type' => 'poster',
+                'width' => 0,
             ]],
             'productionCompanies' => [],
             'productionCountries' => [],

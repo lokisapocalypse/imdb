@@ -5,27 +5,36 @@ namespace Fusani\Movies\Domain\Model\Movie;
 class Poster
 {
     protected $link;
-    protected $size;
     protected $type;
+    protected $width;
+    protected $height;
 
-    public function __construct($link, $type, $size = '')
+    public function __construct($link, $type, $width = 0, $height = 0)
     {
+        $this->height = $height;
         $this->link = $link;
-        $this->size = $size;
         $this->type = $type;
+        $this->width = $width;
     }
 
     public function identity()
     {
-        return $this->link.$this->size.$this->type;
+        return sprintf(
+            '%s-%d-x-%d-%s',
+            $this->link,
+            $this->width,
+            $this->height,
+            $this->type
+        );
     }
 
     public function providePosterInterest()
     {
         return [
+            'height' => $this->height,
             'link' => $this->link,
-            'size' => $this->size,
             'type' => $this->type,
+            'width' => $this->width,
         ];
     }
 }

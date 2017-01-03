@@ -125,9 +125,9 @@ class MovieBuilder
         }
 
         if (!empty($data['poster_120x171'])) {
-            $movie->addPoster($data['poster_120x171'], 'poster', '120x171');
+            $movie->addPoster($data['poster_120x171'], 'poster', 171, 120);
         } elseif (!empty($data['artwork_208x117'])) {
-            $movie->addPoster($data['artwork_208x117'], 'poster', '208x117');
+            $movie->addPoster($data['artwork_208x117'], 'poster', 117, 208);
         }
 
         if (!empty($data['rating'])) {
@@ -224,7 +224,7 @@ class MovieBuilder
         }
 
         foreach ($interest['posters'] as $poster) {
-            $movie->addPoster($poster['link'], $poster['type'], $poster['size']);
+            $movie->addPoster($poster['link'], $poster['type'], $poster['width'], $poster['height']);
         }
 
         foreach ($interest['productionCompanies'] as $productionCompany) {
