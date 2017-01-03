@@ -27,7 +27,7 @@ class EpisodeBuilder
         }
 
         foreach ($interest['posters'] as $poster) {
-            $episode->addPoster($poster['link'], $poster['type'], $poster['size']);
+            $episode->addPoster($poster['link'], $poster['type'], $poster['width'], $poster['height']);
         }
 
         foreach ($interest['sources'] as $type => $sources) {
@@ -54,7 +54,7 @@ class EpisodeBuilder
             $details['episode_number']
         );
         $episode->setPlot($details['overview']);
-        $episode->addPoster($details['thumbnail_208x117'], 'poster', '208x117');
+        $episode->addPoster($details['thumbnail_208x117'], 'poster', 117, 208);
 
         $sources = [];
 

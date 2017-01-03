@@ -60,9 +60,9 @@ class Episode
         return $this;
     }
 
-    public function addPoster($link, $type, $size = '')
+    public function addPoster($link, $type, $width = 0, $height = 0)
     {
-        $poster = new Poster($link, $type, $size);
+        $poster = new Poster($link, $type, $width, $height);
 
         foreach ($this->posters as $existingPoster) {
             if ($existingPoster->identity() == $poster->identity()) {

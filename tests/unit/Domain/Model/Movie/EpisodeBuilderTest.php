@@ -35,7 +35,8 @@ class EpisodeBuilderTest extends PHPUnit_Framework_TestCase
             'posters' => [[
                 'link' => 'www.newyearsparty.com',
                 'type' => 'poster',
-                'size' => '208x117',
+                'width' => 117,
+                'height' => 208,
             ]],
             'season' => 1,
             'sources' => [
@@ -184,7 +185,8 @@ class EpisodeBuilderTest extends PHPUnit_Framework_TestCase
             'posters' => [[
                 'link' => 'www.movieposters.com',
                 'type' => 'poster',
-                'size' => '208x117',
+                'width' => 117,
+                'height' => 208,
             ]],
             'season' => 1,
             'sources' => [],

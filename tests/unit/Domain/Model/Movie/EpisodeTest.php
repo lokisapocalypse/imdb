@@ -134,17 +134,17 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
 
     public function testAddPosterWithNoPosters()
     {
-        $episode = $this->episode->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $episode = $this->episode->addPoster('www.ghostbusters.com/poster', 'poster', 117, 208);
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);
 
-        $episode = $this->episode->addPoster('www.ghostbusters.com/banner', 'banner', '700x380');
+        $episode = $this->episode->addPoster('www.ghostbusters.com/banner', 'banner', 380, 700);
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);
 
         $expected = [
-            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'size' => '208x117'],
-            ['link' => 'www.ghostbusters.com/banner', 'type' => 'banner', 'size' => '700x380'],
+            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'width' => 117, 'height' => 208],
+            ['link' => 'www.ghostbusters.com/banner', 'type' => 'banner', 'width' => 380, 'height' => 700],
         ];
 
         $this->assertEquals($expected, $episode->provideEpisodeInterest()['posters']);
@@ -152,16 +152,16 @@ class EpisodeTest extends PHPUnit_Framework_TestCase
 
     public function testAddDuplicatePoster()
     {
-        $episode = $this->episode->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $episode = $this->episode->addPoster('www.ghostbusters.com/poster', 'poster', 117, 208);
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);
 
-        $episode = $this->episode->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $episode = $this->episode->addPoster('www.ghostbusters.com/poster', 'poster', 117, 208);
         $this->assertNotNull($episode);
         $this->assertInstanceOf(Episode::class, $episode);
 
         $expected = [
-            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'size' => '208x117'],
+            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'width' => 117, 'height' => 208],
         ];
 
         $this->assertEquals($expected, $episode->provideEpisodeInterest()['posters']);

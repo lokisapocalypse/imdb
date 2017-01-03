@@ -422,17 +422,17 @@ class MovieTest extends PHPUnit_Framework_TestCase
 
     public function testAddPosterWithNoPosters()
     {
-        $movie = $this->movie->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $movie = $this->movie->addPoster('www.ghostbusters.com/poster', 'poster', 117, 208);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
 
-        $movie = $this->movie->addPoster('www.ghostbusters.com/banner', 'banner', '700x380');
+        $movie = $this->movie->addPoster('www.ghostbusters.com/banner', 'banner', 380, 700);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
 
         $expected = [
-            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'size' => '208x117'],
-            ['link' => 'www.ghostbusters.com/banner', 'type' => 'banner', 'size' => '700x380'],
+            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'width' => 117, 'height' => 208],
+            ['link' => 'www.ghostbusters.com/banner', 'type' => 'banner', 'width' => 380, 'height' => 700],
         ];
 
         $this->assertEquals($expected, $movie->provideMovieInterest()['posters']);
@@ -441,16 +441,16 @@ class MovieTest extends PHPUnit_Framework_TestCase
 
     public function testAddDuplicatePoster()
     {
-        $movie = $this->movie->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $movie = $this->movie->addPoster('www.ghostbusters.com/poster', 'poster', 117, 208);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
 
-        $movie = $this->movie->addPoster('www.ghostbusters.com/poster', 'poster', '208x117');
+        $movie = $this->movie->addPoster('www.ghostbusters.com/poster', 'poster', 117, 208);
         $this->assertNotNull($movie);
         $this->assertInstanceOf(Movie::class, $movie);
 
         $expected = [
-            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'size' => '208x117'],
+            ['link' => 'www.ghostbusters.com/poster', 'type' => 'poster', 'width' => 117, 'height' => 208],
         ];
 
         $this->assertEquals($expected, $movie->provideMovieInterest()['posters']);
