@@ -219,6 +219,7 @@ class Movie
         }
 
         $review = new Review($review, $author, $link);
+        $review->generateTitle();
         $this->reviews[] = $review;
         return $this;
     }
