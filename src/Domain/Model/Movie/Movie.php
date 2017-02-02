@@ -34,7 +34,7 @@ class Movie
     protected $type;
     protected $year;
 
-    public function __construct($id, $title, $type, $year)
+    public function __construct($id, $title, $type, $year = null)
     {
         $this->id = $id;
         $this->alternateTitles = [];

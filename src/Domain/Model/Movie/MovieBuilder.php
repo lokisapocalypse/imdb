@@ -303,13 +303,21 @@ class MovieBuilder
 
     public function buildFromTheMovieDB(array $data, $type)
     {
-        $releaseDate = new DateTime(empty($data['release_date']) ? $data['first_air_date'] : $data['release_date']);
+        $year = null;
+
+        if (!empty($data['release_date'])) {
+            $year = new DateTime($data['release_date']);
+            $year = $year->format('Y');
+        } elseif (!empty($data['first_air_date'])) {
+            $year = new DateTime($data['first_air_date']);
+            $year = $year->format('Y');
+        }
 
         $movie = new Movie(
             $data['id'],
             empty($data['title']) ? $data['original_name'] : $data['title'],
             $type,
-            $releaseDate->format('Y')
+            $year
         );
         $movie->addExternalId($data['id'], 'The Movie DB');
 
