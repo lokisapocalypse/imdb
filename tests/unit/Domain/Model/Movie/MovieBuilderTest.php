@@ -176,8 +176,8 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Movie::class, $movie);
 
         $expected = [
-            ['author' => 'genius', 'link' => 'www.truth.com', 'review' => 'It was good'],
-            ['author' => 'idiot', 'link' => 'www.lies.com', 'review' => 'It sucked'],
+            ['author' => 'genius', 'link' => 'www.truth.com', 'review' => 'It was good', 'title' => 'It was good'],
+            ['author' => 'idiot', 'link' => 'www.lies.com', 'review' => 'It sucked', 'title' => 'It sucked'],
         ];
         $this->assertEquals($expected, $movie->provideMovieInterest()['reviews']);
     }
@@ -650,8 +650,8 @@ class MovieBuilderTest extends PHPUnit_Framework_TestCase
             ]],
             'revenue' => 50000000,
             'reviews' => [
-                ['review' => 'its good', 'author' => 'me', 'link' => 'www.me.com'],
-                ['review' => 'it sucks', 'author' => 'you', 'link' => 'www.you.com'],
+                ['review' => 'its good', 'author' => 'me', 'link' => 'www.me.com', 'title' => 'its good'],
+                ['review' => 'it sucks', 'author' => 'you', 'link' => 'www.you.com', 'title' => 'it sucks'],
             ],
             'runtime' => 180,
             'similarMovies' => [[

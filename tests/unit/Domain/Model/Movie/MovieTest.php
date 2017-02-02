@@ -590,7 +590,9 @@ class MovieTest extends PHPUnit_Framework_TestCase
     public function testAddReview()
     {
         $reviewOne = new Review('Me', 'It rules', 'www.truth.org');
+        $reviewOne->generateTitle();
         $reviewTwo = new Review('Idiot', 'It sucks', 'www.moron.com');
+        $reviewTwo->generateTitle();
 
         $movie = $this->movie->addReview('Me', 'It rules', 'www.truth.org');
 
@@ -622,6 +624,7 @@ class MovieTest extends PHPUnit_Framework_TestCase
     public function testAddReviewDoesntAddDuplicateReview()
     {
         $reviewOne = new Review('Ivan Reitman', 'reviewOne', 'reviewOnes');
+        $reviewOne->generateTitle();
 
         $movie = $this->movie->addReview('Ivan Reitman', 'reviewOne', 'reviewOnes');
 
