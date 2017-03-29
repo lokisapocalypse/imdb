@@ -18,6 +18,7 @@ class MovieRepository implements Movie\MovieRepository
     protected $titleSimilarityScoringService;
     protected $tryFuzzyOnFail;
     protected $type;
+    protected $update;
     protected $withAlternateTitles;
     protected $withCast;
     protected $withKeywords;
@@ -43,6 +44,7 @@ class MovieRepository implements Movie\MovieRepository
         $this->titleSimilarityScoringService = new Movie\TitleSimilarityScoringService();
         $this->tryFuzzyOnFail = false;
         $this->type = 'movie';
+        $this->update = 'new';
         $this->withAlternateTitles = false;
         $this->withCast = false;
         $this->withKeywords = false;
@@ -169,6 +171,11 @@ class MovieRepository implements Movie\MovieRepository
         }
 
         return $movie;
+    }
+
+    public function manyMoviesWithChanges($time)
+    {
+        throw new NotYetImplementedException();
     }
 
     protected function manyRecommendationsOfMovie(Movie\Movie $movie)
@@ -356,6 +363,16 @@ class MovieRepository implements Movie\MovieRepository
         return $this;
     }
 
+    public function withNewEpisodes()
+    {
+        return $this;
+    }
+
+    public function withNewMovies()
+    {
+        return $this;
+    }
+
     public function withRecommendations()
     {
         $this->withRecommendations = true;
@@ -371,6 +388,16 @@ class MovieRepository implements Movie\MovieRepository
     public function withSimilarMovies()
     {
         $this->withSimilarMovies = true;
+        return $this;
+    }
+
+    public function withUpdatedEpisodes()
+    {
+        return $this;
+    }
+
+    public function withUpdatedMovies()
+    {
         return $this;
     }
 }

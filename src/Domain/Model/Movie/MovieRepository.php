@@ -17,6 +17,7 @@ interface MovieRepository
         $sources = 'all',
         $platform = 'all'
     );
+    public function manyMoviesWithChanges($time);
     public function manyWithTitle($title);
     public function manyWithTitleLike($title);
     public function oneOfId($id);
@@ -29,7 +30,11 @@ interface MovieRepository
     public function withAllData();
     public function withCast();
     public function withKeywords();
+    public function withNewEpisodes();
+    public function withNewMovies();
     public function withRecommendations();
     public function withSimilarMovies();
     public function withReviews();
+    public function withUpdatedEpisodes();
+    public function withUpdatedMovies();
 }
