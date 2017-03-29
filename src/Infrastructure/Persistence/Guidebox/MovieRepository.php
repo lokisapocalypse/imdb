@@ -8,6 +8,8 @@ use Fusani\Movies\Infrastructure\Adapter;
 
 class MovieRepository implements Movie\MovieRepository
 {
+    const UPDATE_MAX = 1000;
+
     protected $adapter;
     protected $episodeBuilder;
     protected $movieBuilder;
@@ -15,6 +17,7 @@ class MovieRepository implements Movie\MovieRepository
     protected $titleSimilarityScoringService;
     protected $tryFuzzyOnFail;
     protected $type;
+    protected $update;
 
     public function __construct(Adapter\Adapter $adapter)
     {
@@ -25,6 +28,7 @@ class MovieRepository implements Movie\MovieRepository
         $this->titleSimilarityScoringService = new Movie\TitleSimilarityScoringService();
         $this->tryFuzzyOnFail = false;
         $this->type = 'movie';
+        $this->update = 'new';
     }
 
     public function doNotTryFuzzyOnFail()
@@ -74,6 +78,37 @@ class MovieRepository implements Movie\MovieRepository
         }
 
         return $movie;
+    }
+
+    public function manyMoviesWithChanges($time)
+    {
+        $movies = [];
+        $params = ['limit' => self::UPDATE_MAX];
+
+        $totalPages = 1;
+
+        for ($page = 1; $page <= $totalPages; $page++) {
+            $params['page'] = $page;
+
+            // guidebox requires a delay for consecutive calls
+            // i've tried avoid doing that here but this function necessitates it
+            if ($page > 1) {
+                sleep(1);
+            }
+
+            $result = $this->adapter->get("updates/movies/{$this->update}/$time", $params);
+
+            if (!empty($result['total_pages'])) {
+                $totalPages = $result['total_pages'];
+            }
+
+            // these aren't converted to objects because they are just ids and timestamps
+            if (!empty($result['results'])) {
+                $movies = array_merge($movies, $result['results']);
+            }
+        }
+
+        return $movies;
     }
 
     public function manyWithTitle($title)
@@ -216,6 +251,18 @@ class MovieRepository implements Movie\MovieRepository
         return $this;
     }
 
+    public function withNewEpisodes()
+    {
+        $this->update = 'new_episodes';
+        return $this;
+    }
+
+    public function withNewMovies()
+    {
+        $this->update = 'new';
+        return $this;
+    }
+
     public function withRecommendations()
     {
         return $this;
@@ -228,6 +275,18 @@ class MovieRepository implements Movie\MovieRepository
 
     public function withSimilarMovies()
     {
+        return $this;
+    }
+
+    public function withUpdatedEpisodes()
+    {
+        $this->update = 'changed_episodes';
+        return $this;
+    }
+
+    public function withUpdatedMovies()
+    {
+        $this->update = 'changes';
         return $this;
     }
 }

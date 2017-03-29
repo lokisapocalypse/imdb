@@ -55,6 +55,12 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->repository->many(0, 250, 'movie');
     }
 
+    public function testManyMoviesWithChangesNotImplemented()
+    {
+        $this->setExpectedException(NotYetImplementedException::class);
+        $this->repository->manyMoviesWithChanges(10);
+    }
+
     public function testManyWithTitleNoMatches()
     {
         $this->adapter->expects($this->once())
@@ -524,6 +530,16 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertNotNull($repository);
         $this->assertInstanceOf(MovieRepository::class, $repository);
 
+        $repository = $this->repository->withNewEpisodes();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+        $repository = $this->repository->withNewMovies();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
         $repository = $this->repository->withRecommendations();
 
         $this->assertNotNull($repository);
@@ -539,5 +555,14 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertNotNull($repository);
         $this->assertInstanceOf(MovieRepository::class, $repository);
 
+        $repository = $this->repository->withUpdatedEpisodes();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+        $repository = $this->repository->withUpdatedMovies();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
     }
 }

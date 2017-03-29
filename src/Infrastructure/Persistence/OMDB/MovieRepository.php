@@ -49,6 +49,11 @@ class MovieRepository implements Movie\MovieRepository
         throw new NotYetImplementedException();
     }
 
+    public function manyMoviesWithChanges($time)
+    {
+        throw new NotYetImplementedException();
+    }
+
     public function manyWithTitle($title)
     {
         $movies = [];
@@ -175,6 +180,16 @@ class MovieRepository implements Movie\MovieRepository
         return $this;
     }
 
+    public function withNewEpisodes()
+    {
+        return $this;
+    }
+
+    public function withNewMovies()
+    {
+        return $this;
+    }
+
     public function withRecommendations()
     {
         return $this;
@@ -186,6 +201,16 @@ class MovieRepository implements Movie\MovieRepository
     }
 
     public function withSimilarMovies()
+    {
+        return $this;
+    }
+
+    public function withUpdatedEpisodes()
+    {
+        return $this;
+    }
+
+    public function withUpdatedMovies()
     {
         return $this;
     }

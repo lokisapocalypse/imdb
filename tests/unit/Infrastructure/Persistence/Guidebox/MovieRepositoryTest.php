@@ -142,6 +142,42 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(2, count($interest['episodes']));
     }
 
+    public function testManyMoviesWithChangesNoMatches()
+    {
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue(['results' => []]));
+
+        $movies = $this->repository->manyMoviesWithChanges(10);
+
+        $this->assertEquals([], $movies);
+    }
+
+    public function testManyMoviesWithChangesOnePageOfMatches()
+    {
+        $results = ['guardians', 'of', 'the', 'galaxy'];
+        $this->adapter->expects($this->once())
+            ->method('get')
+            ->will($this->returnValue(['total_pages' => 1, 'results' => $results]));
+
+        $movies = $this->repository->manyMoviesWithChanges(10);
+
+        $this->assertEquals($results, $movies);
+    }
+
+    public function testManyMoviesWithChangesMultiplePagesOfMatches()
+    {
+        $results = ['guardians', 'of', 'the', 'galaxy'];
+        $this->adapter->expects($this->exactly(2))
+            ->method('get')
+            ->will($this->returnValue(['total_pages' => 2, 'results' => $results]));
+
+        $movies = $this->repository->manyMoviesWithChanges(10);
+        $results = array_merge($results, $results);
+
+        $this->assertEquals($results, $movies);
+    }
+
     public function testManyWithTitleNoMatches()
     {
         $this->adapter->expects($this->once())
@@ -660,6 +696,16 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertNotNull($repository);
         $this->assertInstanceOf(MovieRepository::class, $repository);
 
+        $repository = $this->repository->withNewEpisodes();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+        $repository = $this->repository->withNewMovies();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
         $repository = $this->repository->withRecommendations();
 
         $this->assertNotNull($repository);
@@ -675,5 +721,14 @@ class MovieRepositoryTest extends PHPUnit_Framework_TestCase
         $this->assertNotNull($repository);
         $this->assertInstanceOf(MovieRepository::class, $repository);
 
+        $repository = $this->repository->withUpdatedEpisodes();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
+
+        $repository = $this->repository->withUpdatedMovies();
+
+        $this->assertNotNull($repository);
+        $this->assertInstanceOf(MovieRepository::class, $repository);
     }
 }
