@@ -31,6 +31,12 @@ class MovieRepository implements Movie\MovieRepository
         $this->update = 'new';
     }
 
+    public function currentTime()
+    {
+        $result = $this->adapter->get('updates/get_current_time', []);
+        return $result['results'];
+    }
+
     public function doNotTryFuzzyOnFail()
     {
         $this->tryFuzzyOnFail = false;
@@ -96,7 +102,8 @@ class MovieRepository implements Movie\MovieRepository
                 sleep(1);
             }
 
-            $result = $this->adapter->get("updates/movies/{$this->update}/$time", $params);
+            // the extra s is intentional as it requires the plural version of the word
+            $result = $this->adapter->get("updates/{$this->type}s/{$this->update}/$time", $params);
 
             if (!empty($result['total_pages'])) {
                 $totalPages = $result['total_pages'];

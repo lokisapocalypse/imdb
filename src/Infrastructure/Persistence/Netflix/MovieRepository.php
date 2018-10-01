@@ -22,6 +22,11 @@ class MovieRepository implements Movie\MovieRepository
         $this->movieBuilder = new Movie\MovieBuilder();
     }
 
+    public function currentTime()
+    {
+        return time();
+    }
+
     public function doNotTryFuzzyOnFail()
     {
         // this api does not support fuzzy matching
