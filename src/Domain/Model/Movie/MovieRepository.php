@@ -4,6 +4,7 @@ namespace Fusani\Movies\Domain\Model\Movie;
 
 interface MovieRepository
 {
+    public function currentTime();
     public function doNotTryFuzzyOnFail();
     public function many($startAt, $numRecords, $type);
     public function manyEpisodesOfShow(

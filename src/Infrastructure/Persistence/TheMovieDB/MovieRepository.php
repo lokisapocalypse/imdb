@@ -86,6 +86,11 @@ class MovieRepository implements Movie\MovieRepository
         return $movie;
     }
 
+    public function currentTime()
+    {
+        return time();
+    }
+
     public function doNotTryFuzzyOnFail()
     {
         $this->tryFuzzyOnFail = false;
